@@ -18,7 +18,7 @@ cliente = new Client({
 
   cliente.on("qr", (qr) => {
     console.log("no habia sesion iniciada");
-    console.log(`se inicia sesion, por favor escanee el qr de arriba o visite http://localhost:3000/qr`);
+    console.log(`se inicia sesión, por favor escanee el qr de arriba o visite http://localhost:3000/qr`);
     appExpress.get('/qr',(req,responseweb)=>{
       let qrEnPagina=qrcodeweb.imageSync(qr.toString(),{type:'svg',size:5})
       responseweb.send(qrEnPagina)
