@@ -15,7 +15,7 @@ appExpress.get('/', (req, res) => {
 
 cliente = new Client({
     authStrategy: new LocalAuth(),
-    puppeteer: { headless: true , args: ['--no-sandbox']},
+    puppeteer: { headless: true , args: ['--no-sandbox','--disable-setuid-sandbox']},
   });
 
   cliente.on("qr", (qr) => {
