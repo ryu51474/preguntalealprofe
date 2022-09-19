@@ -1,0 +1,10 @@
+{
+    "version": 2,
+    "name": "preguntale_al_profe",
+    "builds": [
+       { "src": "app.js", "use": "@vercel/node" }
+    ],
+    "routes": [
+       { "src": "/(.*)", "dest": "./app.js" }
+    ]
+ }
