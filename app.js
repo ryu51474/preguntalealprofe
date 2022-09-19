@@ -15,7 +15,7 @@ appExpress.get('/', (req, res) => {
 
 cliente = new Client({
     authStrategy: new LocalAuth(),
-    puppeteer: { headless: true , args: ['--no-sandbox','--disable-setuid-sandbox'],product: "chrome", executablePath: "/usr/bin/chromium-browser"},
+    puppeteer: { headless: true },
   });
 
   cliente.on("qr", (qr) => {
