@@ -1,7 +1,7 @@
 const express = require('express');
 const appExpress = express();
 const {Client, LocalAuth,Buttons,List} = require('whatsapp-web.js');
-const codigoqr = require("qrcode-terminal");//por render
+//const codigoqr = require("qrcode-terminal");//por render
 const qrcodeweb = require('node-qr-image');
 const cleverbot = require('cleverbot-free');
 const validadorEmail = require('email-validator');
@@ -20,7 +20,7 @@ cliente = new Client({
 
   cliente.on("qr", (qr) => {
     console.log("no habia sesion iniciada");
-    codigoqr.generate(qr, { small: true , size:5});
+    //codigoqr.generate(qr, { small: true , size:5});
     console.log(`se inicia sesión, por favor escanee el qr de arriba o visite http://localhost:${puerto}/qr`);
     appExpress.get('/qr',(req,responseweb)=>{
       let qrEnPagina=qrcodeweb.imageSync(qr.toString(),{type:'svg',size:5})
