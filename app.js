@@ -20,7 +20,7 @@ const menuOpciones=`Estas son las opciones: escribe en palabras tu solicitud seg
 '👇 aquí'
 const bot = new Telegraf(BOT_TOKEN);
 bot.start((ctx) => ctx.reply('Bienvenido, escribe opciones para saber lo que puedo hacer.\nEl uso indebido del sistema implica bloqueo, baneo y otras posibles consecuencias'));
-bot.help((ctx) => ctx.reply(ctx.from.first_name+'/n'+menuOpciones));
+bot.help((ctx) => ctx.reply(ctx.from.first_name+'\n'+menuOpciones));
 //pruebas de envio de archivo
 /* bot.command('informe', (ctx)=>{
   ctx.sendDocument({source:'./informes/informeDeEjemplo.html'})
@@ -71,7 +71,7 @@ bot.on('text', (ctx)=>{
       cambioEmail(ctx,nombreCompletoUsuario,mensajeUsuario);
     } else {ctx.reply(`${nuevoEmailalumno} no es un email valido. reintente`)}
   } else if (mensajeUsuario.search(/opciones/)>=0){//opciones del bot y sus acciones
-    ctx.reply(ctx.from.first_name+'/n'+menuOpciones)
+    ctx.reply(ctx.from.first_name+'\n'+menuOpciones)
   } else {/**contesta cleverbot */
     clever(mensajeUsuario)
       .then(async (respuestacleverBot) => {
