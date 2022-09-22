@@ -16,7 +16,7 @@ const menuOpciones=`Estas son las opciones: escribe en palabras tu solicitud seg
 '1.- escribe **opciones** para volver a ver este mensaje\n'+
 '2.- puedes **pedir notas** simplemente escribiéndolo\n'+
 '3.- pideme **cambiar email** para cambiar tu correo para recibir resultados de las pruebas\n'+
-'Tambien puedes usar el listado de comandos con el boton verde MENU\n'+
+'Tambien puedes usar el listado de comandos con el botón MENU\n'+
 '👇 aquí'
 const bot = new Telegraf(BOT_TOKEN);
 bot.start((ctx) => ctx.reply('Bienvenido, escribe opciones para saber lo que puedo hacer.\nEl uso indebido del sistema implica bloqueo, baneo y otras posibles consecuencias'));
