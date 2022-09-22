@@ -12,14 +12,15 @@ const BOT_TOKEN = tokenTlgrm();
 
 var ahora = new Date(); //PROCESO PENDIENTE: se ha subido aqui, sacado del primer if porque solo debe responder el bot si es muy tarde
 console.log('cliente inicializado. ya se puede operar')
-const bot = new Telegraf(BOT_TOKEN);
-bot.start((ctx) => ctx.reply('Bienvenido, escribe opciones para saber lo que puedo hacer.\nEl uso indebido del sistema implica bloqueo, baneo y otras posibles consecuencias'));
-bot.help((ctx) => ctx.reply(`Opciones: ${ctx.from.first_name} escribe en palabras tu solicitud segun lo que quieras hacer\n`+
+const menuOpciones=`Opciones: ${ctx.from.first_name} escribe en palabras tu solicitud segun lo que quieras hacer\n`+
 '1.- escribe **opciones** para volver a ver este mensaje\n'+
 '2.- puedes **pedir notas** simplemente escribiéndolo\n'+
 '3.- pideme **cambiar email** para cambiar tu correo para recibir resultados de las pruebas\n'+
 'Tambien puedes usar el listado de comandos con el boton verde MENU\n'+
-'👇 aquí'));
+'👇 aquí'
+const bot = new Telegraf(BOT_TOKEN);
+bot.start((ctx) => ctx.reply('Bienvenido, escribe opciones para saber lo que puedo hacer.\nEl uso indebido del sistema implica bloqueo, baneo y otras posibles consecuencias'));
+bot.help((ctx) => ctx.reply(menuOpciones));
 //pruebas de envio de archivo
 /* bot.command('informe', (ctx)=>{
   ctx.sendDocument({source:'./informes/informeDeEjemplo.html'})
@@ -70,10 +71,7 @@ bot.on('text', (ctx)=>{
       cambioEmail(ctx,nombreCompletoUsuario,mensajeUsuario);
     } else {ctx.reply(`${nuevoEmailalumno} no es un email valido. reintente`)}
   } else if (mensajeUsuario.search(/opciones/)>=0){//opciones del bot y sus acciones
-    ctx.reply(`Opciones: ${nombreUsuario} escribe en palabras tu solicitud segun lo que quieras hacer\n`+
-                                      '1.- escribe **opciones** para volver a ver este mensaje\n'+
-                                      '2.- puedes **pedir notas** simplemente escribiéndolo\n'+
-                                      '3.- pideme **cambiar email** para cambiar tu correo para recibir resultados de las pruebas')
+    ctx.reply(menuOpciones)
   } else {/**contesta cleverbot */
     clever(mensajeUsuario)
       .then(async (respuestacleverBot) => {
@@ -98,52 +96,3 @@ bot.launch();
 // Enable graceful stop
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
-
-
-
-
-
-
-
-/* 
-PARTE SUPRIMIDA POR CAMBIO DE WSP A TELGRM
-const appExpress = express();
-const {Client, LocalAuth,Buttons,List} = require('whatsapp-web.js');
-//const codigoqr = require("qrcode-terminal");//por render
-const qrcodeweb = require('node-qr-image');
-const cleverbot = require('cleverbot-free');
-const validadorEmail = require('email-validator');
-const { validate, clean, format, getCheckDigit } = require('rut.js');
-const validaRut = (rut)=>{return validate(rut)};
-
-const puerto=process.env.PORT||3000
-appExpress.get('/', (req, res) => {
-    res.send('Pagina principal. para encontrar el codigo qr escriba /qr al final en esta barra de direcciones')
-});
-
-cliente = new Client({
-    authStrategy: new LocalAuth(),
-    puppeteer: { headless: true },
-  });
-
-  cliente.on("qr", (qr) => {
-    console.log("no habia sesion iniciada");
-    //codigoqr.generate(qr, { small: true , size:5});
-    console.log(`se inicia sesión, por favor escanee el qr de arriba o visite http://localhost:${puerto}/qr`);
-    appExpress.get('/qr',(req,responseweb)=>{
-      let qrEnPagina=qrcodeweb.imageSync(qr.toString(),{type:'svg',size:5})
-      responseweb.send(qrEnPagina)
-    })
-  });
-  cliente.on("ready", () => {
-    console.log("cliente inicializado, ya se puede operar");
-  });
-  cliente.on("auth_failure", (errorAutenticacion) => {
-    console.log("fallo el inicio de sesion porque: ", errorAutenticacion);
-    // connectionLost()
-  });
-
-cliente.initialize();
-appExpress.listen(puerto, function () {
-    console.log(`Servidor esta corriendo en: http://localhost:${puerto}`);
-}); */
