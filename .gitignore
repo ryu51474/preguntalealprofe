@@ -1,4 +1,4 @@
 node_modules
-informes
+#informes
 .wwebjs_auth
 .DS_Store
