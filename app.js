@@ -12,7 +12,7 @@ const BOT_TOKEN = tokenTlgrm();
 
 var ahora = new Date(); //PROCESO PENDIENTE: se ha subido aqui, sacado del primer if porque solo debe responder el bot si es muy tarde
 console.log('cliente inicializado. ya se puede operar')
-const menuOpciones=`Opciones: ${ctx.from.first_name} escribe en palabras tu solicitud segun lo que quieras hacer\n`+
+const menuOpciones=`Estas son las opciones: escribe en palabras tu solicitud segun lo que quieras hacer\n`+
 '1.- escribe **opciones** para volver a ver este mensaje\n'+
 '2.- puedes **pedir notas** simplemente escribiéndolo\n'+
 '3.- pideme **cambiar email** para cambiar tu correo para recibir resultados de las pruebas\n'+
@@ -20,7 +20,7 @@ const menuOpciones=`Opciones: ${ctx.from.first_name} escribe en palabras tu soli
 '👇 aquí'
 const bot = new Telegraf(BOT_TOKEN);
 bot.start((ctx) => ctx.reply('Bienvenido, escribe opciones para saber lo que puedo hacer.\nEl uso indebido del sistema implica bloqueo, baneo y otras posibles consecuencias'));
-bot.help((ctx) => ctx.reply(menuOpciones));
+bot.help((ctx) => ctx.reply(ctx.from.first_name+'/n'+menuOpciones));
 //pruebas de envio de archivo
 /* bot.command('informe', (ctx)=>{
   ctx.sendDocument({source:'./informes/informeDeEjemplo.html'})
@@ -71,7 +71,7 @@ bot.on('text', (ctx)=>{
       cambioEmail(ctx,nombreCompletoUsuario,mensajeUsuario);
     } else {ctx.reply(`${nuevoEmailalumno} no es un email valido. reintente`)}
   } else if (mensajeUsuario.search(/opciones/)>=0){//opciones del bot y sus acciones
-    ctx.reply(menuOpciones)
+    ctx.reply(ctx.from.first_name+'/n'+menuOpciones)
   } else {/**contesta cleverbot */
     clever(mensajeUsuario)
       .then(async (respuestacleverBot) => {
