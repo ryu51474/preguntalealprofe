@@ -20,6 +20,10 @@ bot.help((ctx) => ctx.reply(`Opciones: ${ctx.from.first_name} escribe en palabra
 '3.- pideme **cambiar email** para cambiar tu correo para recibir resultados de las pruebas\n'+
 'Tambien puedes usar el listado de comandos con el boton verde MENU\n'+
 '👇 aquí'));
+//pruebas de envio de archivo
+/* bot.command('informe', (ctx)=>{
+  ctx.sendDocument({source:'./informes/informeDeEjemplo.html'})
+}) */
 bot.on('text', (ctx)=>{
   const nombreUsuario = ctx.from.first_name;
   const apellidoUsuario = ctx.from.last_name;
@@ -84,6 +88,7 @@ bot.on('text', (ctx)=>{
       });
   }
 })
+
 
 //para otro tipo de mensajes
 bot.on('sticker', (ctx) => ctx.reply('👍'));

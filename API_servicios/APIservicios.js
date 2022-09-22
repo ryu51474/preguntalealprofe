@@ -58,21 +58,17 @@ function envioNotas(ctx,nombreCompletoUsuario,mensajeUsuario){
             var nombreArchivomedia = `informe notas de fisica solicitado por ${nombreCompletoUsuario} al ${ahora.getDate()}-${ahora.getMonth()}-${ahora.getFullYear()}.html`;
             var pathFileNombrearchivo = `./informes/${nombreArchivomedia}`;
             //escribo el archivo localmente
-            new MessageMedia(
               fs.writeFile(
                 pathFileNombrearchivo,
                 respuestaTextodeDireccion,
                 (errorescrituraArchivo) => {
                   console.log(errorescrituraArchivo);
                 }
-              )
-            );
+              );
             //envio el archivo del informe dandole un tiempo de espera
             setTimeout(async () => {
-              var archivomedia = MessageMedia.fromFilePath(
-                `./informes/${nombreArchivomedia}`
-              );
-              await ctx.reply(numeroEmisor, archivomedia);
+              var archivomedia = `./informes/${nombreArchivomedia}`;
+              await ctx.sendDocument({source:archivomedia});
               //ahora borro el achivo generado
               await fs.unlinkSync(pathFileNombrearchivo);
             }, 10000);
