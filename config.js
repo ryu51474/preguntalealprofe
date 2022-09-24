@@ -1,5 +1,5 @@
 function tokenTlgrm() {
-    const tokenProfeDaniel = '1064387076:AAHJUmOM7g7iwDKynkAeWKKYbLrTPKKBBjc';
+    const tokenProfeDaniel = process.env.BOT_TOKEN;
     return tokenProfeDaniel.toString();
 }
 

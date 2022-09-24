@@ -31,8 +31,8 @@ bot.on('text', (ctx)=>{
   const usernameUsuario = ctx.from.username;
   const nombreCompletoUsuario = nombreUsuario+' '+apellidoUsuario;
   const mensajeUsuario = ctx.message.text.toLowerCase();
-  console.log(ctx.message.text);
-  console.log(nombreUsuario + ' '+ apellidoUsuario+ ' de usuario '+ usernameUsuario+' dijo: '+ mensajeUsuario)
+  //console.log(ctx.message.text);
+  //console.log(nombreUsuario + ' '+ apellidoUsuario+ ' de usuario '+ usernameUsuario+' dijo: '+ mensajeUsuario)
   //analisis del texto y acciones según mensaje
   if(mensajeUsuario.search(/hola/)>=0){//si el mensaje viene con la palabra hola responde un saludo al azar
     var arrayRespuestas = [
@@ -46,9 +46,9 @@ bot.on('text', (ctx)=>{
       arrayRespuestas[Math.floor(Math.random() * arrayRespuestas.length)];
     ctx.reply(mensajeRespuestaSaludoAzar)
     ctx.reply(`Si deseas saber que puedo hacer por ti puedes escribir **opciones** para saberlo`)
-    console.log(mensajeRespuestaSaludoAzar)
+    //console.log(mensajeRespuestaSaludoAzar)
   } else if (mensajeUsuario.search(/nota/)>=0){//si en el mensaje existe la palabra nota da instrucciones para recibir notas
-    ctx.reply(`${nombreUsuario},  si deseas saber notas debes de ahora ingresar solo tu rut, sin puntos ni guión, en caso de terminar en k reemplácelo con un 1, ej: el rut 12.345.678-k se escribe 123456781. si eres extranjero, no escribas el 100. SI NO LO HACE CORRECTAMENTE SU PETICION SERA ANULADA E IGNORADA (Puede que se responda con cualquier cosa absurda)`)
+    ctx.reply(`${nombreUsuario},  si deseas saber notas debes de ahora ingresar solo tu rut, sin puntos ni guión, en caso de terminar en k reemplácelo con un 1, ej: el rut 12.345.678-k se escribe 123456781. si eres extranjero,  SE INCLUYE EL 100. SI NO LO HACE CORRECTAMENTE SU PETICION SERA ANULADA E IGNORADA (Puede que se responda con cualquier cosa absurda)`)
   } else if (!isNaN(mensajeUsuario)&&validaRut(mensajeUsuario)){
       envioNotas(ctx,nombreCompletoUsuario,mensajeUsuario);
   } else if (mensajeUsuario.normalize("NFD").replace(/[\u0300-\u036f]/g, "").search(/adios/) >= 0||mensajeUsuario.search(/chao/) >= 0) {//despedida con mensaje final

@@ -12,6 +12,8 @@ function cambioEmail(ctx,nombreCompletoUsuario,mensajeUsuario){
     console.log('Inicia sistema de cambio de email llamado');
     let respuestaACambioStandard = `${nombreCompletoUsuario}, cambio tu email a ${mensajeUsuario.split(',')[1]} ahora mismo, dame unos segundos para verificar tus datos`;
     ctx.reply(respuestaACambioStandard);
+    //proceso de validacion de rut deprecado pues al cambiar email no necesita validar si es un rut valido o no
+    //if(cuerpoMensaje.split(',')[0].substring(0,3)=='100') cuerpoMensaje = cuerpoMensaje.split('100')[1];
     fetch(urlApiNuevoEmail+mensajeUsuario)
       .then((respuestaApiEmail)=>{
         return respuestaApiEmail;
@@ -38,6 +40,7 @@ function cambioEmail(ctx,nombreCompletoUsuario,mensajeUsuario){
 function envioNotas(ctx,nombreCompletoUsuario,mensajeUsuario){
   //si escribe un numero se toma como un rut y se analiza si se puede sacar las notas
   var RUT = mensajeUsuario.replace(/[\.,-]/g, ""); //no tiene sentido el    .replace(/k/gi,'1')
+  if (RUT.substring(0,3)=='100') RUT=RUT.split('100')
   ctx.reply(
     "Espere un momento mientras reviso sus datos."
   );
