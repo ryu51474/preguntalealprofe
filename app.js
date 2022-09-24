@@ -28,7 +28,7 @@ bot.help((ctx) => ctx.reply(ctx.from.first_name+'\n'+menuOpciones));
 bot.on('text', (ctx)=>{
   const nombreUsuario = ctx.from.first_name;
   const apellidoUsuario = ctx.from.last_name;
-  const usernameUsuario = ctx.from.username;
+  //const usernameUsuario = ctx.from.username;
   const nombreCompletoUsuario = nombreUsuario+' '+apellidoUsuario;
   const mensajeUsuario = ctx.message.text.toLowerCase();
   //console.log(ctx.message.text);
