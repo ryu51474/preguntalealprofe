@@ -84,7 +84,7 @@ bot.on('text', (ctx)=>{
   } else {/**contesta cleverbot */
     clever(mensajeUsuario)
       .then(async (respuestacleverBot) => {
-        await console.log("respuesta cleverbot: " + respuestacleverBot);
+        await //console.log("respuesta cleverbot: " + respuestacleverBot);
         ctx.reply(respuestacleverBot);
       })
       .catch((errorCleverbot) => {
