@@ -45,7 +45,8 @@ bot.on('text', (ctx)=>{
     var mensajeRespuestaSaludoAzar =
       arrayRespuestas[Math.floor(Math.random() * arrayRespuestas.length)];
     ctx.reply(mensajeRespuestaSaludoAzar)
-    ctx.reply(`Si deseas saber que puedo hacer por ti puedes escribir **opciones** para saberlo`)
+    ctx.reply(`Si deseas saber que puedo hacer por ti puedes escribir **opciones** para saberlo`+
+              `\n Si eres profesor sigue las instrucciones de acceso que te dieron`)
     //console.log(mensajeRespuestaSaludoAzar)
   } else if (mensajeUsuario.search(/nota/)>=0){//si en el mensaje existe la palabra nota da instrucciones para recibir notas
     ctx.reply(`${nombreUsuario},  si deseas saber notas debes de ahora ingresar solo tu rut, sin puntos ni guión, en caso de terminar en k reemplácelo con un 1, ej: el rut 12.345.678-k se escribe 123456781. si eres extranjero,  SE INCLUYE EL 100. SI NO LO HACE CORRECTAMENTE SU PETICION SERA ANULADA E IGNORADA (Puede que se responda con cualquier cosa absurda)`)
@@ -76,7 +77,7 @@ bot.on('text', (ctx)=>{
     ctx.reply(`${nombreUsuario}, para solicitar los datos de algun estudiante `+
                                      `debes usar el comando, un espacio y el rut del estudiante sin puntos ni guión. `+
                                      `En caso de terminar en k, reemplácelo por un 1 en esta forma exactamente por ejemplo: /datos 123456781 `+
-                                     `Si es rut extranjero NO incluya e 100`)
+                                     `\nSi es rut extranjero NO incluya e 100`)
   } else if(cuerpoMensaje.search(/\/datos/)>=0){
       datosEstudiante(ctx,nombreCompletoUsuario,mensajeUsuario);
   } else {/**contesta cleverbot */
