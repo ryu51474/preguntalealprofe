@@ -6,7 +6,7 @@ const validadorEmail = require('email-validator');
 
 //modulo propios externos
 const {tokenTlgrm} = require('./config');
-const { envioNotas } = require('./API_servicios/APIservicios');
+const { cambioEmail,envioNotas,datosEstudiante } = require('./API_servicios/APIservicios');
 const BOT_TOKEN = tokenTlgrm();
 //const {cambioEmail,envioNotas} = require('./API_servicios/APIservicios');
 
