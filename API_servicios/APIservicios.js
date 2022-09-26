@@ -40,7 +40,7 @@ function cambioEmail(ctx,nombreCompletoUsuario,mensajeUsuario){
 function envioNotas(ctx,nombreCompletoUsuario,mensajeUsuario){
   //si escribe un numero se toma como un rut y se analiza si se puede sacar las notas
   var RUT = mensajeUsuario.replace(/[\.,-]/g, ""); //no tiene sentido el    .replace(/k/gi,'1')
-  if (RUT.substring(0,3)=='100') RUT=RUT.split('100')
+  if (RUT.substring(0,3)=='100') RUT=RUT.split('100')[1]
   ctx.reply(
     "Espere un momento mientras reviso sus datos."
   );
