@@ -79,7 +79,7 @@ bot.on('text', (ctx)=>{
                                      `En caso de terminar en k, reemplácelo por un 1 en esta forma exactamente por ejemplo:`+
                                      `\n /datos 123456781 `+
                                      `\nSi es rut extranjero NO incluya el 100`)
-  } else if(cuerpoMensaje.search(/\/datos/)>=0){
+  } else if(mensajeUsuario.search(/\/datos/)>=0){
       datosEstudiante(ctx,nombreCompletoUsuario,mensajeUsuario);
   } else {/**contesta cleverbot */
     clever(mensajeUsuario)
