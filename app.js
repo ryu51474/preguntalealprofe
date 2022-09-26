@@ -72,6 +72,13 @@ bot.on('text', (ctx)=>{
     } else {ctx.reply(`${nuevoEmailalumno} no es un email valido. reintente`)}
   } else if (mensajeUsuario.search(/opciones/)>=0){//opciones del bot y sus acciones
     ctx.reply(ctx.from.first_name+'\n'+menuOpciones)
+  } else if(mensajeUsuario.search(/\/profesor/)>=0){
+    ctx.reply(`${nombreUsuario}, para solicitar los datos de algun estudiante `+
+                                     `debes usar el comando, un espacio y el rut del estudiante sin puntos ni guión. `+
+                                     `En caso de terminar en k, reemplácelo por un 1 en esta forma exactamente por ejemplo: /datos 123456781 `+
+                                     `Si es rut extranjero NO incluya e 100`)
+  } else if(cuerpoMensaje.search(/\/datos/)>=0){
+      datosEstudiante(ctx,nombreCompletoUsuario,mensajeUsuario);
   } else {/**contesta cleverbot */
     clever(mensajeUsuario)
       .then(async (respuestacleverBot) => {

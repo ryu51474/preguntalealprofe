@@ -95,8 +95,45 @@ function envioNotas(ctx,nombreCompletoUsuario,mensajeUsuario){
   //cliente.sendMessage(numeroEmisor,apirespuestafinal.toString());  
 }
 
+function datosEstudiante(ctx,nombreCompletoUsuario,mensajeUsuario){
+  ctx.reply(`${nombreCompletoUsuario}, dame unos segundos para revisar los datos`);
+  mensajeUsuario = mensajeUsuario.split(' ')[1]  
+  var RUT = mensajeUsuario.replace(/[\.,-]/g, "");
+  fetch(urlApiDatosEstudiante+RUT)
+    .then((direccionRespuestaApiDatosEstudiante)=>{
+        return direccionRespuestaApiDatosEstudiante;
+    })
+    .then((direccionRespuestaApiDatosEstudiante)=>{
+      fetch(direccionRespuestaApiDatosEstudiante.url)
+        .then((respuestaDireccionApiDatosEstudiante)=>{
+          return respuestaDireccionApiDatosEstudiante.text();
+        })
+        .then((respuestaDireccionApiDatosEstudiante)=>{
+          //recibo el string
+          if(
+            respuestaDireccionApiDatosEstudiante!=="Estudiante no existe, reintente"
+          ){
+            //console.log(respuestaDireccionApiDatosEstudiante);
+            setTimeout(async ()=>{
+              await ctx.reply(respuestaDireccionApiDatosEstudiante);
+            },5000)
+          } else {
+            ctx.reply(
+              "Estudiante no existe, verifique los datos y reintente. Si el problema persiste escriba a dcornejo@liceotecnicotalcahuano.cl indicando su rut, nombre y curso"
+            );
+          }
+        })
+        .catch((errorRespuestaDireccionApiDatosEstudiante)=>{
+          console.log(errorRespuestaDireccionApiDatosEstudiante)
+        });
+    })
+    .catch((errorUrlApiDatosEstudiante)=>{
+      console.log(`Error en urlApiDatosEstudiante por: ${errorUrlApiDatosEstudiante}`);
+    })
+}
 
 module.exports={
     cambioEmail,
-    envioNotas
+    envioNotas,
+    datosEstudiante
 }
