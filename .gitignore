@@ -2,3 +2,4 @@ node_modules
 #informes
 .wwebjs_auth
 .DS_Store
+.fleet
