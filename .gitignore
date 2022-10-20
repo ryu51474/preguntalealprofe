@@ -3,3 +3,4 @@ node_modules
 .wwebjs_auth
 .DS_Store
 .fleet
+vercel.json
