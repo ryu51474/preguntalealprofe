@@ -10,7 +10,6 @@ const { cambioEmail,envioNotas,datosEstudiante } = require('./API_servicios/APIs
 const BOT_TOKEN = tokenTlgrm();
 //const {cambioEmail,envioNotas} = require('./API_servicios/APIservicios');
 
-var ahora = new Date(); //PROCESO PENDIENTE: se ha subido aqui, sacado del primer if porque solo debe responder el bot si es muy tarde
 console.log('cliente inicializado. ya se puede operar')
 const menuOpciones=`Estas son las opciones: escribe en palabras tu solicitud segun lo que quieras hacer\n`+
 '1.- escribe **opciones** para volver a ver este mensaje\n'+
@@ -35,6 +34,7 @@ bot.on('text', (ctx)=>{
   //console.log(nombreUsuario + ' '+ apellidoUsuario+ ' de usuario '+ usernameUsuario+' dijo: '+ mensajeUsuario)
   //analisis del texto y acciones según mensaje
   if(mensajeUsuario.search(/hola/)>=0){//si el mensaje viene con la palabra hola responde un saludo al azar
+    var ahora = new Date(); //PROCESO PENDIENTE: se ha subido aqui, sacado del primer if porque solo debe responder el bot si es muy tarde
     var arrayRespuestas = [
       `estas bien?, un gusto saludarte ${nombreCompletoUsuario}`,
       `son las ${ahora.getHours()}:${ahora.getMinutes()} en este momento, en serio me escribes a esta hora ${nombreUsuario}?`,
