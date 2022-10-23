@@ -39,7 +39,7 @@ bot.on('text', (ctx)=>{
     //var diferenciaHoraria = moment.tz('America/Santiago') //comentado porque la hora de servidor es en UTC y provoca diferencia horaria 
     var arrayRespuestas = [
       `estas bien?, un gusto saludarte ${nombreCompletoUsuario}`,
-      `son las ${ahora.getHours()}:${ahora.getMinutes()} en este momento, en serio me escribes a esta hora ${nombreUsuario}?`,
+      `son las ${ahora.getHours()}:${ahora.getMinutes()<10?'0':''}${ahora.getMinutes()} en este momento, en serio me escribes a esta hora ${nombreUsuario}?`,
       `palabras, siempre palabras. por que no me dices de una vez que quieres ${nombreUsuario}?`,
       `${nombreUsuario}, podrias mejorar lo que me dices`,
       `primero el mensaje de saludos, bien ${nombreUsuario}`,
