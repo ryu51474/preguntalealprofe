@@ -3,7 +3,7 @@ const { validate, clean, format, getCheckDigit } = require('rut.js');
 const validaRut = (rut)=>{return validate(rut)};
 const clever = require("cleverbot-free");
 const validadorEmail = require('email-validator');
-const moment = require('moment-timezone');
+//const moment = require('moment-timezone');
 
 //modulo propios externos
 const {tokenTlgrm} = require('./config');
@@ -35,11 +35,11 @@ bot.on('text', (ctx)=>{
   //console.log(nombreUsuario + ' '+ apellidoUsuario+ ' de usuario '+ usernameUsuario+' dijo: '+ mensajeUsuario)
   //analisis del texto y acciones según mensaje
   if(mensajeUsuario.search(/hola/)>=0){//si el mensaje viene con la palabra hola responde un saludo al azar
-    var ahora = new Date()
-    var diferenciaHoraria = moment.tz('America/Santiago')//new Date(); //PROCESO PENDIENTE: se ha subido aqui, sacado del primer if porque solo debe responder el bot si es muy tarde
+    var ahora = new Date()//PROCESO PENDIENTE: se ha subido aqui, sacado del primer if porque solo debe responder el bot si es muy tarde
+    //var diferenciaHoraria = moment.tz('America/Santiago') //comentado porque la hora de servidor es en UTC y provoca diferencia horaria 
     var arrayRespuestas = [
       `estas bien?, un gusto saludarte ${nombreCompletoUsuario}`,
-      `son las ${ahora.getHours()+diferenciaHoraria.hours()}:${ahora.getMinutes()} en este momento, en serio me escribes a esta hora ${nombreUsuario}?`,
+      `son las ${ahora.getHours()}:${ahora.getMinutes()} en este momento, en serio me escribes a esta hora ${nombreUsuario}?`,
       `palabras, siempre palabras. por que no me dices de una vez que quieres ${nombreUsuario}?`,
       `${nombreUsuario}, podrias mejorar lo que me dices`,
       `primero el mensaje de saludos, bien ${nombreUsuario}`,

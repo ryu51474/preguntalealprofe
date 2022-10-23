@@ -14,7 +14,6 @@
     "cleverbot-free": "^1.1.11",
     "email-validator": "^2.0.4",
     "isomorphic-fetch": "^3.0.0",
-    "moment-timezone": "^0.5.38",
     "nodemon": "^2.0.20",
     "rut.js": "^2.1.0",
     "telegraf": "^4.9.2"
