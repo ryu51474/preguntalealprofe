@@ -35,11 +35,11 @@ bot.on('text', (ctx)=>{
   //console.log(nombreUsuario + ' '+ apellidoUsuario+ ' de usuario '+ usernameUsuario+' dijo: '+ mensajeUsuario)
   //analisis del texto y acciones según mensaje
   if(mensajeUsuario.search(/hola/)>=0){//si el mensaje viene con la palabra hola responde un saludo al azar
-    //var lugar_servidor = moment.tz.guess()
-    var ahora = moment.tz('America/Santiago')//new Date(); //PROCESO PENDIENTE: se ha subido aqui, sacado del primer if porque solo debe responder el bot si es muy tarde
+    var ahora = new Date()
+    var diferenciaHoraria = moment.tz('America/Santiago')//new Date(); //PROCESO PENDIENTE: se ha subido aqui, sacado del primer if porque solo debe responder el bot si es muy tarde
     var arrayRespuestas = [
       `estas bien?, un gusto saludarte ${nombreCompletoUsuario}`,
-      `son las ${ahora.hours()}:${ahora.minutes()} en este momento, en serio me escribes a esta hora ${nombreUsuario}?`,
+      `son las ${ahora.getHours()+diferenciaHoraria.hours()}:${ahora.getMinutes()} en este momento, en serio me escribes a esta hora ${nombreUsuario}?`,
       `palabras, siempre palabras. por que no me dices de una vez que quieres ${nombreUsuario}?`,
       `${nombreUsuario}, podrias mejorar lo que me dices`,
       `primero el mensaje de saludos, bien ${nombreUsuario}`,
