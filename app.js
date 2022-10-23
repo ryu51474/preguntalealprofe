@@ -36,7 +36,7 @@ bot.on('text', (ctx)=>{
   //analisis del texto y acciones según mensaje
   if(mensajeUsuario.search(/hola/)>=0){//si el mensaje viene con la palabra hola responde un saludo al azar
     //var lugar_servidor = moment.tz.guess()
-    var ahora = moment.tz('America/Santiago'))//new Date(); //PROCESO PENDIENTE: se ha subido aqui, sacado del primer if porque solo debe responder el bot si es muy tarde
+    var ahora = moment.tz('America/Santiago')//new Date(); //PROCESO PENDIENTE: se ha subido aqui, sacado del primer if porque solo debe responder el bot si es muy tarde
     var arrayRespuestas = [
       `estas bien?, un gusto saludarte ${nombreCompletoUsuario}`,
       `son las ${ahora.hours()}:${ahora.minutes()} en este momento, en serio me escribes a esta hora ${nombreUsuario}?`,
