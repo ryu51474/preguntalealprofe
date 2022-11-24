@@ -7,9 +7,8 @@ const validadorEmail = require('email-validator');
 
 //modulo propios externos
 const {tokenTlgrm} = require('./config');
-const { cambioEmail,envioNotas,datosEstudiante } = require('./API_servicios/APIservicios');
+const { cambioEmail,envioNotas,datosEstudiante,inscripcionAlSistema } = require('./API_servicios/APIservicios');
 const BOT_TOKEN = tokenTlgrm();
-//const {cambioEmail,envioNotas} = require('./API_servicios/APIservicios');
 
 console.log('cliente inicializado. ya se puede operar')
 const menuOpciones=`Estas son las opciones: escribe en palabras tu solicitud segun lo que quieras hacer\n`+
@@ -19,20 +18,19 @@ const menuOpciones=`Estas son las opciones: escribe en palabras tu solicitud seg
 'Tambien puedes usar el listado de comandos con el botón MENU\n'+
 '👇 aquí'
 const bot = new Telegraf(BOT_TOKEN);
-bot.start((ctx) => ctx.reply('Bienvenido, escribe opciones para saber lo que puedo hacer.\nEl uso indebido del sistema implica bloqueo, baneo y otras posibles consecuencias'));
+bot.start((ctx) => ctx.reply('Bienvenido, escribe *opciones* para saber lo que puedo hacer.\nEl uso indebido del sistema implica bloqueo, baneo y otras posibles consecuencias'));
 bot.help((ctx) => ctx.reply(ctx.from.first_name+'\n'+menuOpciones));
 //pruebas de envio de archivo
 /* bot.command('informe', (ctx)=>{
   ctx.sendDocument({source:'./informes/informeDeEjemplo.html'})
 }) */
-bot.on('text', (ctx)=>{
+bot.on('text', async (ctx)=>{
   const nombreUsuario = ctx.from.first_name;
   const apellidoUsuario = ctx.from.last_name;
   //const usernameUsuario = ctx.from.username;
   const nombreCompletoUsuario = nombreUsuario+' '+apellidoUsuario;
   const mensajeUsuario = ctx.message.text.toLowerCase();
   //console.log(ctx.message.text);
-  //console.log(nombreUsuario + ' '+ apellidoUsuario+ ' de usuario '+ usernameUsuario+' dijo: '+ mensajeUsuario)
   //analisis del texto y acciones según mensaje
   if(mensajeUsuario.search(/hola/)>=0){//si el mensaje viene con la palabra hola responde un saludo al azar
     var ahora = new Date()//PROCESO PENDIENTE: se ha subido aqui, sacado del primer if porque solo debe responder el bot si es muy tarde
@@ -46,8 +44,8 @@ bot.on('text', (ctx)=>{
     ];
     var mensajeRespuestaSaludoAzar =
       arrayRespuestas[Math.floor(Math.random() * arrayRespuestas.length)];
-    ctx.reply(mensajeRespuestaSaludoAzar)
-    ctx.reply(`Si deseas saber que puedo hacer por ti puedes escribir **opciones** para saberlo`+
+    await ctx.reply(mensajeRespuestaSaludoAzar)
+    await ctx.reply(`Si deseas saber que puedo hacer por ti puedes escribir **opciones** para saberlo`+
               `\nSi eres profesor sigue las instrucciones de acceso que te dieron`)
     //console.log(mensajeRespuestaSaludoAzar)
   } else if (mensajeUsuario.search(/nota/)>=0){//si en el mensaje existe la palabra nota da instrucciones para recibir notas
@@ -59,30 +57,57 @@ bot.on('text', (ctx)=>{
       "Chao. Para mas información visita cuando quieras https://www.profedaniel.cf"
     );
   } else if (mensajeUsuario.search(/email/)>=0){//instrucciones de cambio de email en la base de datos
-    console.log('inicio de envio de  INSTRUCCIONES DE  cambio de email');
+    //console.log('inicio de envio de  INSTRUCCIONES DE  cambio de email');
     ctx.reply(`${nombreUsuario}, para cambiar tu email en el que recibes las notas debes escribir ahora tu rut sin puntos ni guion seguido de una coma y el nuevo email. SIN ESPACIOS o su solicitud será rechazada. En caso que su rut termine en k reemplácelo por un 1. Si es extranjero no escriba el 100 \n ej: 123456781,nuevocorreo@gmail.com`)
   } else if(mensajeUsuario.search(/@/)>=0){
     //se analiza si esta correcto el mensaje
     let rutconEmail = mensajeUsuario.split(',')
     //regex del rut
     let RUT = rutconEmail[0].replace(/[\.,-]/g, "");
-    console.log(RUT);
     var nuevoEmailalumno = rutconEmail[1].replace(" ","")
-    console.log(nuevoEmailalumno);
     if (validadorEmail.validate(nuevoEmailalumno)){
       console.log(`${nuevoEmailalumno} es un email valido`);
       cambioEmail(ctx,nombreCompletoUsuario,mensajeUsuario);
     } else {ctx.reply(`${nuevoEmailalumno} no es un email valido. reintente`)}
   } else if (mensajeUsuario.search(/opciones/)>=0){//opciones del bot y sus acciones
     ctx.reply(ctx.from.first_name+'\n'+menuOpciones)
-  } else if(mensajeUsuario.search(/\/profesor/)>=0){
+  } else if(mensajeUsuario.search(/\/profesor/)==0){//instrucciones especificas para profesor
     ctx.reply(`${nombreUsuario}, para solicitar los datos de algun estudiante `+
                                      `debes usar el comando, un espacio y el rut del estudiante sin puntos ni guión. `+
                                      `En caso de terminar en k, reemplácelo por un 1 en esta forma exactamente por ejemplo:`+
                                      `\n /datos 123456781 `+
                                      `\nSi es rut extranjero NO incluya el 100`)
-  } else if(mensajeUsuario.search(/\/datos/)>=0){
+  } else if(mensajeUsuario.search(/\/datos/)==0){
       datosEstudiante(ctx,nombreCompletoUsuario,mensajeUsuario);
+  } else if (mensajeUsuario.search(/\/inscribirse/)==0){
+    await ctx.reply(`${nombreUsuario}, para inscribirse al sistema del profesor debes REEMPLAZAR y ENVIAR los siguientes datos tal como se te indica. NO OLVIDES LAS REGLAS, como por ejemplo el uso correcto de las Mayusculas, no usar tildes, el rut como el ejemplo y NO BORRAR LA COMA al final de cada dato\n O TENDRAS QUE HACERLO DE NUEVO\n`);
+    
+    await ctx.reply('***copia y cambia los datos por los tuyos***\n'+
+                    '***cuando termines me los envias***\n'+
+                    '***👇👇👇👇👇👇👇👇👇👇👇***\n');
+    await ctx.reply('Estudiante,\n'+
+              'Primer_Nombre: Alan,\n'+
+              '2_Apellidos: Brito Delgado,\n'+
+              'RUT: 12345678-5,\n'+
+              'numero_de_lista : 3,\n'+
+              'Direccion: blanco encalada 1250 Talcahuano,\n'+
+              'Telefono: +56912345678,\n'+
+              'Nombre_y_Apellido_Apoderado: Zoila Vaca,\n'+
+              'Telefono_Apoderado: +56912345678');
+  } else if(mensajeUsuario.search(/estudiante,/)==0){//funcion para inscribir alumno nuevo en sistema
+    ctx.reply('datos estudiante' + mensajeUsuario.split(',').length);//linea de pruebas del mensaje
+    let rutAverificar = mensajeUsuario.split(',')[3].split(':')[1].replace(' ','');
+    if(validaRut(rutAverificar)&&mensajeUsuario.split(',').length==9){
+      let resultadoInscripcion=inscripcionAlSistema(mensajeUsuario)
+      ctx.reply(nombreCompletoUsuario +' ... '+ resultadoInscripcion);
+    } else {
+      ctx.reply('Te equivocaste en los datos 😔, verifícalos.'+
+                '\nVerifica si borraste por error alguna coma o algo de la plantilla que te di que no debías borrar'+
+                '\nSi tienes dudas pídele ayuda a tu profesor o escribe */online* (👈🏾 tócalo si no quieres escribir) para darte ayudarte yo de otra manera en la web mediante google')
+    }
+    
+  } else if (mensajeUsuario.search(/\/online/)==0){
+    ctx.reply('https://chat-forms.com/forms/1614949217593-mnk/?form')
   } else {/**contesta cleverbot */
     clever(mensajeUsuario)
       .then(async (respuestacleverBot) => {

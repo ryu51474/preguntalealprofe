@@ -4,13 +4,15 @@ const urlApiNuevoEmail =
     "https://script.google.com/macros/s/AKfycbyYYD23WAZ2_XBfRBgbeX4R5XqCwbfaPvrYkKQ38Dh7J3oPGKKQqv-3l8m8XxR_OaEKoQ/exec?sdata=";
 const urlApiDatosEstudiante =
     "https://script.google.com/macros/s/AKfycbyYYD23WAZ2_XBfRBgbeX4R5XqCwbfaPvrYkKQ38Dh7J3oPGKKQqv-3l8m8XxR_OaEKoQ/exec?sdata=datosEstudiante,";
+const urlApiInscripcionEstudiante = 
+    "https://google.com"
 
 //const { Telegraf } = require('telegraf');
 const fetch = require('isomorphic-fetch');
 const fs = require('fs');
 var ahora=new Date();
 
-function cambioEmail(ctx,nombreCompletoUsuario,mensajeUsuario){
+function cambioEmail(ctx,nombreCompletoUsuario,mensajeUsuario){//cambia email del alumno en la BBDD
     console.log('Inicia sistema de cambio de email llamado');
     let respuestaACambioStandard = `${nombreCompletoUsuario}, cambio tu email a ${mensajeUsuario.split(',')[1]} ahora mismo, dame unos segundos para verificar tus datos`;
     ctx.reply(respuestaACambioStandard);
@@ -39,7 +41,7 @@ function cambioEmail(ctx,nombreCompletoUsuario,mensajeUsuario){
       }))
 }
 
-function envioNotas(ctx,nombreCompletoUsuario,mensajeUsuario){
+function envioNotas(ctx,nombreCompletoUsuario,mensajeUsuario){//extrae notas del estudiante en un informe
   //si escribe un numero se toma como un rut y se analiza si se puede sacar las notas
   var RUT = mensajeUsuario.replace(/[\.,-]/g, ""); //no tiene sentido el    .replace(/k/gi,'1')
   if (RUT.substring(0,3)=='100') RUT=RUT.split('100')[1]
@@ -97,7 +99,7 @@ function envioNotas(ctx,nombreCompletoUsuario,mensajeUsuario){
   //cliente.sendMessage(numeroEmisor,apirespuestafinal.toString());  
 }
 
-function datosEstudiante(ctx,nombreCompletoUsuario,mensajeUsuario){
+function datosEstudiante(ctx,nombreCompletoUsuario,mensajeUsuario){//extrae los datos de un estudiante desde la BBDD con el rut
   ctx.reply(`${nombreCompletoUsuario}, dame unos segundos para revisar los datos`);
   mensajeUsuario = mensajeUsuario.split(' ')[1]  
   var RUT = mensajeUsuario.replace(/[\.,-]/g, "");
@@ -133,9 +135,23 @@ function datosEstudiante(ctx,nombreCompletoUsuario,mensajeUsuario){
       console.log(`Error en urlApiDatosEstudiante por: ${errorUrlApiDatosEstudiante}`);
     })
 }
+function inscripcionAlSistema(mensajeUsuario) {//inscribe al alumno al sistema de la BBDD
+  let datos_inscripcion=mensajeUsuario.split(',');
+  let primer_nombre=datos_inscripcion[1].split(':')[1];
+  let dos_apellidos=datos_inscripcion[2].split(':')[1].replace(/^ /,'');
+  let rut_nuevo = datos_inscripcion[3].split(':')[1].replace(' ','');
+  let numero_lista = datos_inscripcion[4].split(':')[1];
+  let direccion = datos_inscripcion[5].split(':')[1];
+  let fono = datos_inscripcion[6].split(':')[1].replace(' ','');
+  let apoderado = datos_inscripcion[7].split(':')[1].replace(/^ /,'');
+  let fono_apoderado = datos_inscripcion[8].split(':')[1].replace(' ','');
+  let respuestaDevolver = apoderado//'respuesta del server';
+  return respuestaDevolver;
+}
 
 module.exports={
     cambioEmail,
     envioNotas,
-    datosEstudiante
+    datosEstudiante,
+    inscripcionAlSistema
 }
