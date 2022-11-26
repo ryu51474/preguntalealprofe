@@ -83,12 +83,12 @@ bot.on('text', async (ctx)=>{
     
     await ctx.reply(`${nombreUsuario}, para inscribirse al sistema del profesor debes REEMPLAZAR y ENVIAR los siguientes datos tal como se te indica. NO OLVIDES LAS REGLAS, como por ejemplo el uso correcto de las Mayusculas, no usar tildes, el rut como el ejemplo y NO BORRAR LA COMA al final de cada dato\n O TENDRAS QUE HACERLO DE NUEVO\n`);
     
-    setTimeout( async ()=>{
+    setTimeout( async ()=>
      await ctx.reply('***copia y cambia los datos por los tuyos***\n'+
                     '***cuando termines me los envias***\n'+
-                    '***👇👇👇👇👇👇👇👇👇👇👇***\n');},3000);
+                    '***👇👇👇👇👇👇👇👇👇👇👇***\n'),3000);
     
-    setTimeout( async ()=>{
+    setTimeout( async ()=>
     await ctx.reply('Estudiante,\n'+
               'Primer_Nombre: Alan,\n'+
               '2_Apellidos: Brito Delgado,\n'+
@@ -97,7 +97,7 @@ bot.on('text', async (ctx)=>{
               'Direccion: blanco encalada 1250 Talcahuano,\n'+
               'Telefono: +56912345678,\n'+
               'Nombre_y_Apellido_Apoderado: Zoila Vaca,\n'+
-              'Telefono_Apoderado: +56987654321')},9000);
+              'Telefono_Apoderado: +56987654321'),9000);
   } else if(mensajeUsuario.search(/estudiante,/)==0){//funcion para inscribir alumno nuevo en sistema
     //ctx.reply('datos estudiante' + mensajeUsuario.split(',').length);//linea de pruebas del mensaje
     let apellidosVerificar = mensajeUsuario.split(',')[2].split(':')[1].trim();
@@ -111,7 +111,7 @@ bot.on('text', async (ctx)=>{
                         \nSi consideras que tu escribiste bien, verifica que no hay dos espacios entre tus dos apellidos`)
     }
     if (fono.length!=12||fono_apoderado.length!=12) {
-      return ctx.reply(`${nombreUsuario}, al parecer alguno de los números de teléfono esta incorrecto, verifícalo. si lo necesitas pídele ayuda a tu profesor`)
+      return ctx.reply(`${nombreUsuario}, al parecer alguno de los números de teléfono esta incorrecto, verifícalo (no olvides el + antes del 56). si lo necesitas pídele ayuda a tu profesor`)
     }else if(fono===fono_apoderado){
       return ctx.reply(`${nombreUsuario}, no puedes poner el mismo número de teléfono para ti y tu apoderado. Favor corrígelo`)
     }
@@ -126,7 +126,8 @@ bot.on('text', async (ctx)=>{
     }
     
   } else if (mensajeUsuario.search(/\/online/)==0){
-    ctx.reply('https://chat-forms.com/forms/1614949217593-mnk/?form')
+    await ctx.reply(`${nombreUsuario}, accede al siguiente link para inscribirte paso a paso mediante google chat form`)
+    setTimeout(async()=>await ctx.reply('https://chat-forms.com/forms/1614949217593-mnk/?form'),3000)//https://chat-forms.com/forms/1614949217593-mnk/?form
   } else {/**contesta cleverbot */
     clever(mensajeUsuario)
       .then(async (respuestacleverBot) => {
