@@ -97,7 +97,7 @@ bot.on('text', async (ctx)=>{
               'Direccion: blanco encalada 1250 Talcahuano,\n'+
               'Telefono: +56912345678,\n'+
               'Nombre_y_Apellido_Apoderado: Zoila Vaca,\n'+
-              'Telefono_Apoderado: +56912345678')},9000);
+              'Telefono_Apoderado: +56987654321')},9000);
   } else if(mensajeUsuario.search(/estudiante,/)==0){//funcion para inscribir alumno nuevo en sistema
     //ctx.reply('datos estudiante' + mensajeUsuario.split(',').length);//linea de pruebas del mensaje
     let apellidosVerificar = mensajeUsuario.split(',')[2].split(':')[1].trim();
@@ -111,9 +111,9 @@ bot.on('text', async (ctx)=>{
                         \nSi consideras que tu escribiste bien, verifica que no hay dos espacios entre tus dos apellidos`)
     }
     if (fono.length!=12||fono_apoderado.length!=12) {
-      return ctx.reply(`${nombreUsuario}, al parecer alguno de los numeros de telefono esta incorrecto, verifícalo. si lo necesitas pídele ayuda a tu profesor`)
+      return ctx.reply(`${nombreUsuario}, al parecer alguno de los números de teléfono esta incorrecto, verifícalo. si lo necesitas pídele ayuda a tu profesor`)
     }else if(fono===fono_apoderado){
-      return ctx.reply(`${nombreUsuario}, no puedes poner el mismo numero de telefono para ti y tu apoderado`)
+      return ctx.reply(`${nombreUsuario}, no puedes poner el mismo número de teléfono para ti y tu apoderado. Favor corrígelo`)
     }
 
     if(validaRut(rutAverificar)&&mensajeUsuario.split(',').length==9){
