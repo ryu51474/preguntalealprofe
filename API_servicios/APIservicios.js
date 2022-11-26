@@ -136,17 +136,36 @@ function datosEstudiante(ctx,nombreCompletoUsuario,mensajeUsuario){//extrae los 
     })
 }
 function inscripcionAlSistema(mensajeUsuario) {//inscribe al alumno al sistema de la BBDD
+  //se extraen los datos de la plantilla
   let datos_inscripcion=mensajeUsuario.split(',');
-  let primer_nombre=datos_inscripcion[1].split(':')[1];
-  let dos_apellidos=datos_inscripcion[2].split(':')[1].replace(/^ /,'');
-  let rut_nuevo = datos_inscripcion[3].split(':')[1].replace(' ','');
-  let numero_lista = datos_inscripcion[4].split(':')[1];
-  let direccion = datos_inscripcion[5].split(':')[1];
-  let fono = datos_inscripcion[6].split(':')[1].replace(' ','');
-  let apoderado = datos_inscripcion[7].split(':')[1].replace(/^ /,'');
-  let fono_apoderado = datos_inscripcion[8].split(':')[1].replace(' ','');
-  let respuestaDevolver = apoderado//'respuesta del server';
+  let primer_nombre=ortografiaMayuscula(datos_inscripcion[1].split(':')[1]).trim();
+  let dos_apellidos=datos_inscripcion[2].split(':')[1].trim()//eliminaEspaciosInicialesFinales(datos_inscripcion[2].split(':')[1]);
+  let primer_apellido=ortografiaMayuscula(dos_apellidos.split(' ')[0]);
+  let segundo_apellido=ortografiaMayuscula(dos_apellidos.split(' ')[1]);
+  let rut_nuevo = datos_inscripcion[3].split(':')[1].replace(' ','').replace(/\s+/g,'');
+  let numero_lista = datos_inscripcion[4].split(':')[1].replace(/^ /,'').trim();
+  let direccion = datos_inscripcion[5].split(':')[1].replace(/^ /,'').trimStart();
+  let fono = datos_inscripcion[6].split(':')[1].replace(/\s+/g,'');
+  let apoderado = datos_inscripcion[7].split(':')[1].replace(/^ /,'').trim();
+  let fono_apoderado = datos_inscripcion[8].split(':')[1].replace(/\s+/g,'');
+  let respuestaDevolver = primer_nombre+' \n'+primer_apellido+' \n'+segundo_apellido+' \n'+rut_nuevo+' \n'+numero_lista+' \n'+direccion+' \n'+fono+' \n'+apoderado+' \n'+fono_apoderado//'respuesta del server';
   return respuestaDevolver;
+}
+
+//microservicios
+function ortografiaMayuscula (palabra){
+  return palabra[0].toUpperCase()+palabra.slice(1).toLowerCase()
+}
+
+function corrigeNumTelefono(numero) {
+  if (numero.search(/+/)<0) {
+    numero='+'+numero
+  }
+  if (numero.length!=11) {
+    
+  } else {
+    
+  }
 }
 
 module.exports={

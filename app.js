@@ -80,11 +80,15 @@ bot.on('text', async (ctx)=>{
   } else if(mensajeUsuario.search(/\/datos/)==0){
       datosEstudiante(ctx,nombreCompletoUsuario,mensajeUsuario);
   } else if (mensajeUsuario.search(/\/inscribirse/)==0){
+    
     await ctx.reply(`${nombreUsuario}, para inscribirse al sistema del profesor debes REEMPLAZAR y ENVIAR los siguientes datos tal como se te indica. NO OLVIDES LAS REGLAS, como por ejemplo el uso correcto de las Mayusculas, no usar tildes, el rut como el ejemplo y NO BORRAR LA COMA al final de cada dato\n O TENDRAS QUE HACERLO DE NUEVO\n`);
     
-    await ctx.reply('***copia y cambia los datos por los tuyos***\n'+
+    setTimeout( async ()=>{
+     await ctx.reply('***copia y cambia los datos por los tuyos***\n'+
                     '***cuando termines me los envias***\n'+
-                    '***👇👇👇👇👇👇👇👇👇👇👇***\n');
+                    '***👇👇👇👇👇👇👇👇👇👇👇***\n');},3000);
+    
+    setTimeout( async ()=>{
     await ctx.reply('Estudiante,\n'+
               'Primer_Nombre: Alan,\n'+
               '2_Apellidos: Brito Delgado,\n'+
@@ -93,17 +97,32 @@ bot.on('text', async (ctx)=>{
               'Direccion: blanco encalada 1250 Talcahuano,\n'+
               'Telefono: +56912345678,\n'+
               'Nombre_y_Apellido_Apoderado: Zoila Vaca,\n'+
-              'Telefono_Apoderado: +56912345678');
+              'Telefono_Apoderado: +56912345678')},9000);
   } else if(mensajeUsuario.search(/estudiante,/)==0){//funcion para inscribir alumno nuevo en sistema
-    ctx.reply('datos estudiante' + mensajeUsuario.split(',').length);//linea de pruebas del mensaje
-    let rutAverificar = mensajeUsuario.split(',')[3].split(':')[1].replace(' ','');
+    //ctx.reply('datos estudiante' + mensajeUsuario.split(',').length);//linea de pruebas del mensaje
+    let apellidosVerificar = mensajeUsuario.split(',')[2].split(':')[1].trim();
+    let rutAverificar = mensajeUsuario.split(',')[3].split(':')[1].replace(/\s+/g,'');
+    let fono = mensajeUsuario.split(',')[6].split(':')[1].replace(/\s+/g,'');
+    let fono_apoderado = mensajeUsuario.split(',')[8].split(':')[1].replace(/\s+/g,'');
+    if (apellidosVerificar.split(' ').length>2) {
+      ctx.reply('Escribiste '+apellidosVerificar.split(/ /).length+' palabras en tus apellidos')
+      return ctx.reply(`${nombreUsuario}, si tus apellidos son compuestos escríbelos como una sola palabra. \nEj: **San Martin** debes escribirlo como **Sanmartin**
+                        \nCorrígelo y vuelve a enviarme los datos.
+                        \nSi consideras que tu escribiste bien, verifica que no hay dos espacios entre tus dos apellidos`)
+    }
+    if (fono.length!=12||fono_apoderado.length!=12) {
+      return ctx.reply(`${nombreUsuario}, al parecer alguno de los numeros de telefono esta incorrecto, verifícalo. si lo necesitas pídele ayuda a tu profesor`)
+    }else if(fono===fono_apoderado){
+      return ctx.reply(`${nombreUsuario}, no puedes poner el mismo numero de telefono para ti y tu apoderado`)
+    }
+
     if(validaRut(rutAverificar)&&mensajeUsuario.split(',').length==9){
       let resultadoInscripcion=inscripcionAlSistema(mensajeUsuario)
-      ctx.reply(nombreCompletoUsuario +' ... '+ resultadoInscripcion);
+      ctx.reply(nombreCompletoUsuario +' se inscriben los siguientes datos ... \n'+ resultadoInscripcion);
     } else {
       ctx.reply('Te equivocaste en los datos 😔, verifícalos.'+
                 '\nVerifica si borraste por error alguna coma o algo de la plantilla que te di que no debías borrar'+
-                '\nSi tienes dudas pídele ayuda a tu profesor o escribe */online* (👈🏾 tócalo si no quieres escribir) para darte ayudarte yo de otra manera en la web mediante google')
+                '\nSi tienes dudas pídele ayuda a tu profesor o escribe /online (👈🏾 tócalo si no quieres escribir) para darte ayudarte yo de otra manera en la web mediante google')
     }
     
   } else if (mensajeUsuario.search(/\/online/)==0){
