@@ -5,7 +5,7 @@ const urlApiNuevoEmail =
 const urlApiDatosEstudiante =
     "https://script.google.com/macros/s/AKfycbyYYD23WAZ2_XBfRBgbeX4R5XqCwbfaPvrYkKQ38Dh7J3oPGKKQqv-3l8m8XxR_OaEKoQ/exec?sdata=datosEstudiante,";
 const urlApiInscripcionEstudiante = 
-    "https://google.com"
+    "https://docs.google.com/forms/d/e/1FAIpQLSf3HzUYOd3OZikZMSBE1VOG6rgS0PkUOIIlAuEFyXHeM8V40A/viewform?usp=pp_url&entry.2005620554=Alan&entry.691594478=Brito+Delgado+&entry.450021770=123456785&entry.1128966543=99&entry.1045781291=ryu51474@gmail.com&entry.1414220081=2AC25&entry.1065046570=direcci%C3%B3n+de+sauces+5+mz+246+villa+4&entry.1166974658=%2B56999999999&entry.839337160=Zoila+Vaca&entry.2030694607=%2B56888888888https://google.com"
 
 //const { Telegraf } = require('telegraf');
 const fetch = require('isomorphic-fetch');
@@ -142,13 +142,15 @@ function inscripcionAlSistema(mensajeUsuario) {//inscribe al alumno al sistema d
   let dos_apellidos=datos_inscripcion[2].split(':')[1].trim()//eliminaEspaciosInicialesFinales(datos_inscripcion[2].split(':')[1]);
   let primer_apellido=ortografiaMayuscula(dos_apellidos.split(' ')[0]);
   let segundo_apellido=ortografiaMayuscula(dos_apellidos.split(' ')[1]);
-  let rut_nuevo = datos_inscripcion[3].split(':')[1].replace('-','').replace(/[K-k]/,'1').replace(/\s+/g,'').replace(/^100/,'');
-  let numero_lista = datos_inscripcion[4].split(':')[1].replace(/^ /,'').trim();
-  let direccion = datos_inscripcion[5].split(':')[1].replace(/^ /,'').trimStart();
-  let fono = datos_inscripcion[6].split(':')[1].replace(/\s+/g,'');
-  let apoderado = ortografiaMayuscula(datos_inscripcion[7].split(':')[1].replace(/^ /,'').trim());
-  let fono_apoderado = datos_inscripcion[8].split(':')[1].replace(/\s+/g,'');
-  let respuestaDevolver = primer_nombre+' \n'+primer_apellido+' \n'+segundo_apellido+' \n'+rut_nuevo+' \n'+numero_lista+' \n'+direccion+' \n'+fono+' \n'+apoderado+' \n'+fono_apoderado//'respuesta del server';
+  let rut_nuevo = datos_inscripcion[3].split(':')[1].replace(/[\.,-]/g, '').replace(/[K-k]/g,'1').replace(/\s+/g,'').replace(/^100/,'');
+  let numero_lista = datos_inscripcion[4].split(':')[1].trim();
+  let correo = datos_inscripcion[5].split(':')[1].trim();
+  let curso = datos_inscripcion[6].split(':')[1].replace(/\s+/g,'').toUpperCase() + 'C25';
+  let direccion = datos_inscripcion[7].split(':')[1].replace(/^ /,'').trimStart();
+  let fono = datos_inscripcion[8].split(':')[1].replace(/\s+/g,'');
+  let apoderado = ortografiaMayuscula(datos_inscripcion[9].split(':')[1].replace(/^ /,'').trim());
+  let fono_apoderado = datos_inscripcion[10].split(':')[1].replace(/\s+/g,'');
+  let respuestaDevolver = primer_nombre+' \n'+primer_apellido+' \n'+segundo_apellido+' \n'+rut_nuevo+' \n'+numero_lista+' \n'+correo+' \n'+curso+' \n'+direccion+' \n'+fono+' \n'+apoderado+' \n'+fono_apoderado//'respuesta del server';
   return respuestaDevolver;
 }
 

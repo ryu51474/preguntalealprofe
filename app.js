@@ -59,16 +59,6 @@ bot.on('text', async (ctx)=>{
   } else if (mensajeUsuario.search(/email/)>=0){//instrucciones de cambio de email en la base de datos
     //console.log('inicio de envio de  INSTRUCCIONES DE  cambio de email');
     ctx.reply(`${nombreUsuario}, para cambiar tu email en el que recibes las notas debes escribir ahora tu rut sin puntos ni guion seguido de una coma y el nuevo email. SIN ESPACIOS o su solicitud será rechazada. En caso que su rut termine en k reemplácelo por un 1. Si es extranjero no escriba el 100 \n ej: 123456781,nuevocorreo@gmail.com`)
-  } else if(mensajeUsuario.search(/@/)>=0){
-    //se analiza si esta correcto el mensaje
-    let rutconEmail = mensajeUsuario.split(',')
-    //regex del rut
-    let RUT = rutconEmail[0].replace(/[\.,-]/g, "");
-    var nuevoEmailalumno = rutconEmail[1].replace(" ","")
-    if (validadorEmail.validate(nuevoEmailalumno)){
-      console.log(`${nuevoEmailalumno} es un email valido`);
-      cambioEmail(ctx,nombreCompletoUsuario,mensajeUsuario);
-    } else {ctx.reply(`${nuevoEmailalumno} no es un email valido. reintente`)}
   } else if (mensajeUsuario.search(/opciones/)>=0){//opciones del bot y sus acciones
     ctx.reply(ctx.from.first_name+'\n'+menuOpciones)
   } else if(mensajeUsuario.search(/\/profesor/)==0){//instrucciones especificas para profesor
@@ -94,6 +84,8 @@ bot.on('text', async (ctx)=>{
               '2_Apellidos: Brito Delgado,\n'+
               'RUT: 12345678-5,\n'+
               'numero_de_lista : 3,\n'+
+              'correo: correo@ejemplo.com,\n'+
+              'curso: 2A,\n'+
               'Direccion: blanco encalada 1250 Talcahuano,\n'+
               'Telefono: +56912345678,\n'+
               'Nombre_y_Apellido_Apoderado: Zoila Vaca,\n'+
@@ -102,8 +94,8 @@ bot.on('text', async (ctx)=>{
     //ctx.reply('datos estudiante' + mensajeUsuario.split(',').length);//linea de pruebas del mensaje
     let apellidosVerificar = mensajeUsuario.split(',')[2].split(':')[1].trim();
     let rutAverificar = mensajeUsuario.split(',')[3].split(':')[1].replace(/\s+/g,'');
-    let fono = mensajeUsuario.split(',')[6].split(':')[1].replace(/\s+/g,'');
-    let fono_apoderado = mensajeUsuario.split(',')[8].split(':')[1].replace(/\s+/g,'');
+    let fono = mensajeUsuario.split(',')[8].split(':')[1].replace(/\s+/g,'');
+    let fono_apoderado = mensajeUsuario.split(',')[10].split(':')[1].replace(/\s+/g,'');
     if (apellidosVerificar.split(' ').length>2) {
       ctx.reply('Escribiste '+apellidosVerificar.split(/ /).length+' palabras en tus apellidos')
       return ctx.reply(`${nombreUsuario}, si tus apellidos son compuestos escríbelos como una sola palabra. \nEj: **San Martin** debes escribirlo como **Sanmartin**
@@ -116,7 +108,7 @@ bot.on('text', async (ctx)=>{
       return ctx.reply(`${nombreUsuario}, no puedes poner el mismo número de teléfono para ti y tu apoderado. Favor corrígelo`)
     }
 
-    if(validaRut(rutAverificar)&&mensajeUsuario.split(',').length==9){
+    if(validaRut(rutAverificar)&&mensajeUsuario.split(',').length==11){
       let resultadoInscripcion=inscripcionAlSistema(mensajeUsuario)
       ctx.reply(nombreCompletoUsuario +' se inscriben los siguientes datos ... \n'+ resultadoInscripcion);
     } else {
@@ -128,6 +120,16 @@ bot.on('text', async (ctx)=>{
   } else if (mensajeUsuario.search(/\/online/)==0){
     await ctx.reply(`${nombreUsuario}, accede al siguiente link para inscribirte paso a paso mediante google chat form`)
     setTimeout(async()=>await ctx.reply('https://chat-forms.com/forms/1614949217593-mnk/?form'),3000)//https://chat-forms.com/forms/1614949217593-mnk/?form
+  } else if(mensajeUsuario.search(/@/)>=0){
+    //se analiza si esta correcto el mensaje
+    let rutconEmail = mensajeUsuario.split(',')
+    //regex del rut
+    let RUT = rutconEmail[0].replace(/[\.,-]/g, '');
+    var nuevoEmailalumno = rutconEmail[1].replace(/\s+/g,'')
+    if (validadorEmail.validate(nuevoEmailalumno)){
+      console.log(`${nuevoEmailalumno} es un email valido`);
+      cambioEmail(ctx,nombreCompletoUsuario,mensajeUsuario);
+    } else {ctx.reply(`${nuevoEmailalumno} no es un email valido. reintente`)}
   } else {/**contesta cleverbot */
     clever(mensajeUsuario)
       .then(async (respuestacleverBot) => {
