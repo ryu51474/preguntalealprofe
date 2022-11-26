@@ -4,8 +4,7 @@ const urlApiNuevoEmail =
     "https://script.google.com/macros/s/AKfycbyYYD23WAZ2_XBfRBgbeX4R5XqCwbfaPvrYkKQ38Dh7J3oPGKKQqv-3l8m8XxR_OaEKoQ/exec?sdata=";
 const urlApiDatosEstudiante =
     "https://script.google.com/macros/s/AKfycbyYYD23WAZ2_XBfRBgbeX4R5XqCwbfaPvrYkKQ38Dh7J3oPGKKQqv-3l8m8XxR_OaEKoQ/exec?sdata=datosEstudiante,";
-const urlApiInscripcionEstudiante = 
-    "https://docs.google.com/forms/d/e/1FAIpQLSf3HzUYOd3OZikZMSBE1VOG6rgS0PkUOIIlAuEFyXHeM8V40A/viewform?usp=pp_url&entry.2005620554=Alan&entry.691594478=Brito+Delgado+&entry.450021770=123456785&entry.1128966543=99&entry.1045781291=ryu51474@gmail.com&entry.1414220081=2AC25&entry.1065046570=direcci%C3%B3n+de+sauces+5+mz+246+villa+4&entry.1166974658=%2B56999999999&entry.839337160=Zoila+Vaca&entry.2030694607=%2B56888888888"
+//const urlApiInscripcionEstudiante = "https://docs.google.com/forms/d/e/1FAIpQLSf3HzUYOd3OZikZMSBE1VOG6rgS0PkUOIIlAuEFyXHeM8V40A/viewform?usp=pp_url&entry.2005620554=Alan&entry.691594478=Brito+Delgado+&entry.450021770=123456785&entry.1128966543=99&entry.1045781291=ryu51474@gmail.com&entry.1414220081=2AC25&entry.1065046570=direcci%C3%B3n+de+sauces+5+mz+246+villa+4&entry.1166974658=%2B56999999999&entry.839337160=Zoila+Vaca&entry.2030694607=%2B56888888888"
 
 //const { Telegraf } = require('telegraf');
 const fetch = require('isomorphic-fetch');
@@ -150,10 +149,8 @@ function inscripcionAlSistema(mensajeUsuario) {//inscribe al alumno al sistema d
   let fono = datos_inscripcion[8].split(':')[1].replace(/\s+/g,'');
   let apoderado = ortografiaMayuscula(datos_inscripcion[9].split(':')[1].trim());
   let fono_apoderado = datos_inscripcion[10].split(':')[1].replace(/\s+/g,'');
-  let respuestaDevolver = primer_nombre+' \n'+primer_apellido+' \n'+segundo_apellido+' \n'+rut_nuevo+' \n'+numero_lista+' \n'+correo_nuevo_alumno+' \n'+curso+' \n'+direccion+' \n'+fono+' \n'+apoderado+' \n'+fono_apoderado//'respuesta del server';
   let linkIncripcion = `https://docs.google.com/forms/d/e/1FAIpQLSf3HzUYOd3OZikZMSBE1VOG6rgS0PkUOIIlAuEFyXHeM8V40A/viewform?usp=pp_url&entry.2005620554=${primer_nombre}&entry.691594478=${primer_apellido}+${segundo_apellido}+&entry.450021770=${rut_nuevo}&entry.1128966543=${numero_lista}&entry.1045781291=${correo_nuevo_alumno}&entry.1414220081=${curso}&entry.1065046570=${direccion.replace(/\s+/g,'+')}&entry.1166974658=%2B${fono.split('+')[1]}&entry.839337160=${apoderado.replace(/\s+/g,'+')}&entry.2030694607=%2B${fono_apoderado.split('+')[1]}`
-  console.log(linkIncripcion)
-  return respuestaDevolver+'\n'+linkIncripcion;
+  return linkIncripcion;
 }
 
 //microservicios

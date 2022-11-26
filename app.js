@@ -12,9 +12,10 @@ const BOT_TOKEN = tokenTlgrm();
 
 console.log('cliente inicializado. ya se puede operar')
 const menuOpciones=`Estas son las opciones: escribe en palabras tu solicitud segun lo que quieras hacer\n`+
-'1.- escribe **opciones** para volver a ver este mensaje\n'+
-'2.- puedes **pedir notas** simplemente escribiéndolo\n'+
-'3.- pideme **cambiar email** para cambiar tu correo para recibir resultados de las pruebas\n'+
+'1.- escribe **opciones** para volver a ver este mensaje.\n'+
+'2.- puedes **pedir notas** simplemente escribiéndolo.\n'+
+'3.- pideme **cambiar email** para cambiar tu correo para recibir resultados de las pruebas.\n'+
+'4.- dime **quiero inscribirme** si no te has incrito al sistema del profesor Daniel.\n'+
 'Tambien puedes usar el listado de comandos con el botón MENU\n'+
 '👇 aquí'
 const bot = new Telegraf(BOT_TOKEN);
@@ -69,7 +70,7 @@ bot.on('text', async (ctx)=>{
                                      `\nSi es rut extranjero NO incluya el 100`)
   } else if(mensajeUsuario.search(/\/datos/)==0){
       datosEstudiante(ctx,nombreCompletoUsuario,mensajeUsuario);
-  } else if (mensajeUsuario.search(/\/inscribirse/)==0){
+  } else if (mensajeUsuario.search(/inscribirme/)>=0){
     
     await ctx.reply(`${nombreUsuario}, para inscribirse al sistema del profesor debes REEMPLAZAR y ENVIAR los siguientes datos tal como se te indica. NO OLVIDES LAS REGLAS, como por ejemplo el uso correcto de las Mayusculas, no usar tildes, el rut como el ejemplo y NO BORRAR LA COMA al final de cada dato\n O TENDRAS QUE HACERLO DE NUEVO\n`);
     
@@ -110,10 +111,11 @@ bot.on('text', async (ctx)=>{
 
     if(validaRut(rutAverificar)&&mensajeUsuario.split(',').length==11){
       let resultadoInscripcion=inscripcionAlSistema(mensajeUsuario)
-      ctx.reply(nombreCompletoUsuario +' se inscriben los siguientes datos ... \n'+ resultadoInscripcion);
+      await ctx.reply(`${nombreUsuario}, por favor revisa cuidadosamente que los datos que me diste estén correctos en el siguiente link y pulsa SIGUIENTE hasta VER Y pulsar ENVIAR para terminar`);
+      setTimeout(async()=>await ctx.reply(resultadoInscripcion),6000);
     } else {
       ctx.reply('Te equivocaste en los datos 😔, verifícalos.'+
-                '\nVerifica si borraste por error alguna coma o algo de la plantilla que te di que no debías borrar'+
+                '\nVerifica si borraste por error alguna coma o algo de la plantilla que te di que no debías borrar y vuelve a enviármelos'+
                 '\nSi tienes dudas pídele ayuda a tu profesor o escribe /online (👈🏾 tócalo si no quieres escribir) para darte ayudarte yo de otra manera en la web mediante google')
     }
     
@@ -124,10 +126,9 @@ bot.on('text', async (ctx)=>{
     //se analiza si esta correcto el mensaje
     let rutconEmail = mensajeUsuario.split(',')
     //regex del rut
-    let RUT = rutconEmail[0].replace(/[\.,-]/g, '');
+    let RUT = rutconEmail[0].replace(/[\.,-]/g, '').replace(/[K-k]/g,'1').replace(/\s+/g,'');
     var nuevoEmailalumno = rutconEmail[1].replace(/\s+/g,'')
     if (validadorEmail.validate(nuevoEmailalumno)){
-      console.log(`${nuevoEmailalumno} es un email valido`);
       cambioEmail(ctx,nombreCompletoUsuario,mensajeUsuario);
     } else {ctx.reply(`${nuevoEmailalumno} no es un email valido. reintente`)}
   } else {/**contesta cleverbot */
