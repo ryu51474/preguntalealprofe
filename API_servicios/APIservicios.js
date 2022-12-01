@@ -4,50 +4,33 @@ const urlApiNuevoEmail =
     "https://script.google.com/macros/s/AKfycbyYYD23WAZ2_XBfRBgbeX4R5XqCwbfaPvrYkKQ38Dh7J3oPGKKQqv-3l8m8XxR_OaEKoQ/exec?sdata=";
 const urlApiDatosEstudiante =
     "https://script.google.com/macros/s/AKfycbyYYD23WAZ2_XBfRBgbeX4R5XqCwbfaPvrYkKQ38Dh7J3oPGKKQqv-3l8m8XxR_OaEKoQ/exec?sdata=datosEstudiante,";
+const numeroAdmin='56964289005';
+//la const de aqui abajo se usa como modelo
+//no se puede usar como const por variables intermedias
 //const urlApiInscripcionEstudiante = "https://docs.google.com/forms/d/e/1FAIpQLSf3HzUYOd3OZikZMSBE1VOG6rgS0PkUOIIlAuEFyXHeM8V40A/viewform?usp=pp_url&entry.2005620554=Alan&entry.691594478=Brito+Delgado+&entry.450021770=123456785&entry.1128966543=99&entry.1045781291=ryu51474@gmail.com&entry.1414220081=2AC25&entry.1065046570=direcci%C3%B3n+de+sauces+5+mz+246+villa+4&entry.1166974658=%2B56999999999&entry.839337160=Zoila+Vaca&entry.2030694607=%2B56888888888"
 
-//const { Telegraf } = require('telegraf');
+
+//seccion telegram
 const fetch = require('isomorphic-fetch');
 const fs = require('fs');
 var ahora=new Date();
 
-function cambioEmail(ctx,nombreCompletoUsuario,mensajeUsuario){//cambia email del alumno en la BBDD
-    console.log('Inicia sistema de cambio de email llamado');
-    let respuestaACambioStandard = `${nombreCompletoUsuario}, cambio tu email a ${mensajeUsuario.split(',')[1]} ahora mismo, dame unos segundos para verificar tus datos`;
-    ctx.reply(respuestaACambioStandard);
-    //proceso de validacion de rut deprecado pues al cambiar email no necesita validar si es un rut valido o no
-    //if(cuerpoMensaje.split(',')[0].substring(0,3)=='100') cuerpoMensaje = cuerpoMensaje.split('100')[1];
-    fetch(urlApiNuevoEmail+mensajeUsuario)
-      .then((respuestaApiEmail)=>{
-        return respuestaApiEmail;
-      })
-      .then((direccionObtenidaEmail)=>{
-        fetch(direccionObtenidaEmail.url)
-          .then((respuestarDireccionEmail)=>{
-            return respuestarDireccionEmail.text();
-          })
-          .then((respuestaTextodeDireccionEmail)=>{
-            //recibo el string
-            console.log(respuestaTextodeDireccionEmail)
-            ctx.reply(respuestaTextodeDireccionEmail);
-          })
-          .catch((errorRespuestaDireccionEmail)=>{
-            console.log(errorRespuestaDireccionEmail);
-          })
-      })
-      .catch((errorDireccionObtenidaEmail=>{
-        console.log(errorDireccionObtenidaEmail)
-      }))
-}
+//seccion whatsapp
+const {MessageMedia} = require('whatsapp-web.js');
 
-function envioNotas(ctx,nombreCompletoUsuario,mensajeUsuario){//extrae notas del estudiante en un informe
+//funciones de proceso en la webapi de google sheets
+function envioNotas(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp){//extrae notas del estudiante en un informe
   //si escribe un numero se toma como un rut y se analiza si se puede sacar las notas
-  var RUT = mensajeUsuario.replace(/[\.,-]/g, ""); //no tiene sentido el    .replace(/k/gi,'1')
-  if (RUT.substring(0,3)=='100') RUT=RUT.split('100')[1]
-  ctx.reply(
-    "Espere un momento mientras reviso sus datos."
-  );
-  fetch(urlApiNotas + RUT)
+  let RUT_solicitar_notas = mensajeUsuario.replace(/[\.,-]/g, "").replace(/[K-k]/g,'1').trim(); //no tiene sentido el    .replace(/k/gi,'1')
+  if (RUT_solicitar_notas.substring(0,3)=='100') RUT_solicitar_notas=RUT_solicitar_notas.split('100')[1];
+  try {
+    ctx.reply(
+      "Espere un momento mientras reviso sus datos."
+    );
+  } catch (error) {
+    cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreCompletoUsuario}, dame unos segundos para revisar los datos`);
+  }
+  fetch(urlApiNotas + RUT_solicitar_notas)
     .then((respuestaApiNotas) => {
       return respuestaApiNotas;
     })
@@ -64,45 +47,69 @@ function envioNotas(ctx,nombreCompletoUsuario,mensajeUsuario){//extrae notas del
             var nombreArchivomedia = `informe notas de fisica solicitado por ${nombreCompletoUsuario} al ${ahora.getDate()}-${ahora.getMonth()}-${ahora.getFullYear()}.html`;
             var pathFileNombrearchivo = `./informes/${nombreArchivomedia}`;
             //escribo el archivo localmente
+            new MessageMedia(//este acto es solo para whatsapp, telegram no lo necesita
               fs.writeFile(
                 pathFileNombrearchivo,
                 respuestaTextodeDireccion,
                 (errorescrituraArchivo) => {
                   console.log(errorescrituraArchivo);
                 }
-              );
+              )
+            );
             //envio el archivo del informe dandole un tiempo de espera
             setTimeout(async () => {
-              var archivomedia = `./informes/${nombreArchivomedia}`;
-              await ctx.sendDocument({source:archivomedia});
+              var archivomediaTlgrm = `./informes/${nombreArchivomedia}`;
+              var archivomediaWsp = MessageMedia.fromFilePath(archivomediaTlgrm)
+              try {
+                await ctx.sendDocument({source:archivomediaTlgrm});
+              } catch (error) {
+                await cliente.sendMessage(numeroUsuarioWhatsapp,archivomediaWsp)
+              }
+              
               //ahora borro el achivo generado
               await fs.unlinkSync(pathFileNombrearchivo);
             }, 10000);
           } else {
-            ctx.reply(
-              "Estudiante no existe, verifique los datos y reintente. Si el problema persiste escriba a dcornejo@liceotecnicotalcahuano.cl indicando su rut, nombre y curso"
-            );
+            try {
+              ctx.reply(
+                "Estudiante no existe, verifique los datos y reintente. Si el problema persiste escriba a dcornejo@liceotecnicotalcahuano.cl indicando su rut, nombre y curso"
+              );
+            } catch (error) {
+              cliente.sendMessage(
+                numeroUsuarioWhatsapp,
+                "Estudiante no existe, verifique los datos y reintente. Si el problema persiste escriba a dcornejo@liceotecnicotalcahuano.cl indicando su rut, nombre y curso"
+              );
+            }
+            
           }
         })
         .catch((errorDireccionObtenida) => {
-          console.log(
-            "error de direccion obtenida url porque: " +
-              errorDireccionObtenida
-          );
+          let mensajeErrorDireccionObtenida="error de direccion obtenida url porque: " +
+          errorDireccionObtenida
+          console.log(mensajeErrorDireccionObtenida);
+          cliente.sendMessage(numeroAdmin,mensajeErrorDireccionObtenida+'\n'+'Peticion de Notas de '+nombreCompletoUsuario)
         });
     })
     .catch((errorApiNotas) => {
-      ctx.reply(numeroEmisor,`Tuve problemas con tu solicitud. por: ${errorApiNotas}. Intente de nuevo, si el problema persiste favor reenvie este mensaje a dcornejo@liceotecnicotalcahuano.cl`)
+      cliente.sendMessage('')
+      try {
+        ctx.reply(`Tuve problemas con tu solicitud. por: ${errorApiNotas}. Intente de nuevo, si el problema persiste favor reenvie este mensaje a dcornejo@liceotecnicotalcahuano.cl`)
+      } catch (error) {
+        cliente.sendMessage(numeroAdmin,`Tuve problemas con la solicitud de notas de ${nombreCompletoUsuario} cuando pidio por el rut ${RUT_solicitar_notas} por: ${errorApiNotas}.`)
+      }
       console.log("error en la api de notas porque: " + errorApiNotas);
     });
-  //cliente.sendMessage(numeroEmisor,apirespuestafinal.toString());  
 }
 
-function datosEstudiante(ctx,nombreCompletoUsuario,mensajeUsuario){//extrae los datos de un estudiante desde la BBDD con el rut
-  ctx.reply(`${nombreCompletoUsuario}, dame unos segundos para revisar los datos`);
+function datosEstudiante(ctx,nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp){//extrae los datos de un estudiante desde la BBDD con el rut
+  try {
+    ctx.reply(`${nombreCompletoUsuario}, dame unos segundos para revisar los datos`);
+  } catch (error) {
+    cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreCompletoUsuario}, dame unos segundos para revisar los datos`);
+  }
   mensajeUsuario = mensajeUsuario.split(' ')[1]  
-  var RUT = mensajeUsuario.replace(/[\.,-]/g, "");
-  fetch(urlApiDatosEstudiante+RUT)
+  let RUT_solicitar_datos = mensajeUsuario.replace(/[\.,-]/g, "").replace(/[K-k]/g,'1').trim();
+  fetch(urlApiDatosEstudiante+RUT_solicitar_datos)
     .then((direccionRespuestaApiDatosEstudiante)=>{
         return direccionRespuestaApiDatosEstudiante;
     })
@@ -118,22 +125,36 @@ function datosEstudiante(ctx,nombreCompletoUsuario,mensajeUsuario){//extrae los 
           ){
             //console.log(respuestaDireccionApiDatosEstudiante);
             setTimeout(async ()=>{
-              await ctx.reply(respuestaDireccionApiDatosEstudiante);
+              try {
+                await ctx.reply(respuestaDireccionApiDatosEstudiante);
+              } catch (error) {
+                await cliente.sendMessage(numeroUsuarioWhatsapp,respuestaDireccionApiDatosEstudiante);
+              }
             },5000)
           } else {
-            ctx.reply(
-              "Estudiante no existe, verifique los datos y reintente. Si el problema persiste escriba a dcornejo@liceotecnicotalcahuano.cl indicando su rut, nombre y curso"
-            );
+            try {
+              ctx.reply(
+                "Estudiante no existe, verifique los datos y reintente. Si el problema persiste escriba a dcornejo@liceotecnicotalcahuano.cl indicando su rut, nombre y curso"
+              );
+            } catch (error) {
+              cliente.sendMessage(
+                numeroUsuarioWhatsapp,
+                "Estudiante no existe, verifique los datos y reintente. Si el problema persiste escriba a dcornejo@liceotecnicotalcahuano.cl indicando su rut, nombre y curso"
+              );
+            }
           }
         })
         .catch((errorRespuestaDireccionApiDatosEstudiante)=>{
+          cliente.sendMessage(numeroAdmin,`Error respuesta direccion api datos estudiante en la solicitud de datos de ${nombreCompletoUsuario} cuando pidio los datos del estudiante ${RUT_solicitar_datos} por : ${errorRespuestaDireccionApiDatosEstudiante}`)
           console.log(errorRespuestaDireccionApiDatosEstudiante)
         });
     })
     .catch((errorUrlApiDatosEstudiante)=>{
+      cliente.sendMessage(numeroAdmin,`Error en la url Api Datos Estudiante cuando pidio ${nombreCompletoUsuario} por el rut ${RUT_solicitar_datos} por: ${errorUrlApiDatosEstudiante}`)
       console.log(`Error en urlApiDatosEstudiante por: ${errorUrlApiDatosEstudiante}`);
     })
 }
+
 function inscripcionAlSistema(mensajeUsuario) {//inscribe al alumno al sistema de la BBDD
   //se extraen los datos de la plantilla
   let datos_inscripcion=mensajeUsuario.split(',');
@@ -153,10 +174,53 @@ function inscripcionAlSistema(mensajeUsuario) {//inscribe al alumno al sistema d
   return linkIncripcion;
 }
 
+function cambioEmail(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp){//cambia email del alumno en la BBDD
+  //console.log('Inicia sistema de cambio de email llamado');
+  let respuestaACambioStandard = `${nombreCompletoUsuario}, cambio tu email a ${mensajeUsuario.split(',')[1]} ahora mismo, dame unos segundos para verificar tus datos`;
+  try {
+    ctx.reply(respuestaACambioStandard);
+  } catch (error) {
+    cliente.sendMessage(numeroUsuarioWhatsapp,respuestaACambioStandard);
+  }
+  //regex del rut
+  let rutconEmail = mensajeUsuario.split(',')
+  let RUT_paraCambioEmail = rutconEmail[0].replace(/[\.,-]/g, '').replace(/[K-k]/g,'1').replace(/\s+/g,'').trim();
+  let correo_paraCambioEmail = rutconEmail.replace(/\s+/g,'').trim();
+  let comandoListoparaAPI = RUT_paraCambioEmail+','+correo_paraCambioEmail;
+  //if(cuerpoMensaje.split(',')[0].substring(0,3)=='100') cuerpoMensaje = cuerpoMensaje.split('100')[1];
+  fetch(urlApiNuevoEmail+comandoListoparaAPI)
+    .then((respuestaApiEmail)=>{
+      return respuestaApiEmail;
+    })
+    .then((direccionObtenidaEmail)=>{
+      fetch(direccionObtenidaEmail.url)
+        .then((respuestarDireccionEmail)=>{
+          return respuestarDireccionEmail.text();
+        })
+        .then((respuestaTextodeDireccionEmail)=>{
+          //recibo el string
+          //console.log(respuestaTextodeDireccionEmail)
+          try {
+            ctx.reply(respuestaTextodeDireccionEmail);
+          } catch (error) {
+            cliente.sendMessage(numeroUsuarioWhatsapp,respuestaTextodeDireccionEmail);
+          }
+        })
+        .catch((errorRespuestaDireccionEmail)=>{
+          console.log(errorRespuestaDireccionEmail);
+          cliente.sendMessage(numeroAdmin,`Hubo un error en la respuesta de la direccion email cuando se quiso cambiar los datos de ${nombreCompletoUsuario} con rut ${RUT_paraCambioEmail} por: ${errorRespuestaDireccionEmail}`)
+        })
+    })
+    .catch((errorDireccionObtenidaEmail=>{
+      console.log(errorDireccionObtenidaEmail);
+      cliente.sendMessage(numeroAdmin,`Hubo un error en la respuesta de la direccion obtenida email cuando se quiso cambiar los datos de ${nombreCompletoUsuario} con rut ${RUT_paraCambioEmail} por: ${errorDireccionObtenidaEmail}`);
+    }))
+}
+
 //microservicios
 function ortografiaMayuscula (texto){
   //return palabra[0].toUpperCase()+palabra.slice(1).toLowerCase()
-  return texto.replace(/(^\w{1})|(\s+\w{1})/g, letra => letra.toUpperCase())
+  return texto.replace(/(^\w{1})|(\s+\w{1})/g, primeraLetra => primeraLetra.toUpperCase())
 }
 
 
