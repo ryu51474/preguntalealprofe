@@ -280,7 +280,7 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
 
     if(validaRut(rutAverificar)&&cuerpoMensajeWhatsapp.split(',').length==11){
       let resultadoInscripcion=inscripcionAlSistema(cuerpoMensajeWhatsapp)
-      await cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuario}, por favor revisa cuidadosamente que los datos que me diste estén correctos en el siguiente link y pulsa SIGUIENTE hasta VER Y pulsar ENVIAR para terminar`);
+      await cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}, por favor revisa cuidadosamente que los datos que me diste estén correctos en el siguiente link y pulsa SIGUIENTE hasta VER Y pulsar ENVIAR para terminar`);
       setTimeout(async()=>await cliente.sendMessage(numeroUsuarioWhatsapp,resultadoInscripcion),6000);
     } else {
       cliente.sendMessage(numeroUsuarioWhatsapp,
