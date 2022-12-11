@@ -175,7 +175,7 @@ bot.on('text', async (ctx)=>{
       .catch((errorCleverbot) => {
         console.log(errorCleverbot);
         ctx.reply(
-          `Por el momento tengo problemas para responder. escribeme mas tarde ${nombreNotificacion}`
+          `Por el momento tengo problemas para responder. escribeme mas tarde ${nombreUsuario}`
         );
       });
   }
