@@ -79,7 +79,7 @@ bot.on('text', async (ctx)=>{
     //console.log(mensajeRespuestaSaludoAzar)
   } else if (mensajeUsuarioTelegram.search(/nota/)>=0){//si en el mensaje existe la palabra nota da instrucciones para recibir notas
     ctx.reply(`${nombreUsuario},  si deseas saber notas debes de ahora ingresar solo tu rut, sin puntos ni guión, en caso de terminar en k reemplácelo con un 1, ej: el rut 12.345.678-k se escribe 123456781. si eres extranjero,  SE INCLUYE EL 100. SI NO LO HACE CORRECTAMENTE SU PETICION SERA ANULADA E IGNORADA (Puede que se responda con cualquier cosa absurda)`)
-  } else if (!isNaN(mensajeUsuarioTelegram)&&validaRut(mensajeUsuarioTelegram)){
+  } else if (!isNaN(mensajeUsuarioTelegram)){
       envioNotas(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null);
   } else if (mensajeUsuarioTelegram.normalize("NFD").replace(/[\u0300-\u036f]/g, "").search(/adios/) >= 0||mensajeUsuarioTelegram.search(/chao/) >= 0) {//despedida con mensaje final
     ctx.reply(
@@ -212,7 +212,7 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
       numeroUsuarioWhatsapp,
       `${nombreUsuarioWhatsapp}, si deseas saber notas debes de ahora ingresar solo tu rut, sin puntos ni guión, en caso de terminar en k reemplácelo con un 1, ej: el rut 12.345.678-k se escribe 123456781. Si eres extranjero, SE INCLUYE EL 100. SI NO LO HACE CORRECTAMENTE SU PETICION SERA ANULADA E IGNORADA (Puede que se responda con cualquier cosa absurda)`
     );
-  } else if (!isNaN(cuerpoMensajeWhatsapp)&&validaRut(cuerpoMensajeWhatsapp)) {//envio de notas usando solo el rut
+  } else if (!isNaN(cuerpoMensajeWhatsapp)) {//envio de notas usando solo el rut
     envioNotas(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp,numeroUsuarioWhatsapp);
   } else if (cuerpoMensajeWhatsapp.normalize("NFD").replace(/[\u0300-\u036f]/g, "").search(/adios/) >= 0||cuerpoMensajeWhatsapp.search(/chao/) >= 0) {//despedida con mensaje final
     mensajeEntrante.reply(
