@@ -54,8 +54,8 @@ bot.help((ctx) => ctx.reply(ctx.from.first_name+'\n'+menuOpciones+finalMenuOpcio
 
 //procesos de anaisis Telegram
 bot.on('text', async (ctx)=>{
-  const nombreUsuario = ctx.from.first_name;
-  const apellidoUsuario = ctx.from.last_name;
+  const nombreUsuario = ctx.from.first_name || " ";
+  const apellidoUsuario = ctx.from.last_name || " ";
   //const usernameUsuario = ctx.from.username;
   const nombreCompletoUsuarioTelegram = nombreUsuario+' '+apellidoUsuario;
   const mensajeUsuarioTelegram = ctx.message.text.toLowerCase();
@@ -185,7 +185,7 @@ bot.on('text', async (ctx)=>{
 cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun mensajes
   let cuerpoMensajeWhatsapp = mensajeEntrante.body.toLowerCase();
   //console.log(mensajeEntrante.body);
-  let nombreUsuarioWhatsapp = mensajeEntrante._data.notifyName;
+  let nombreUsuarioWhatsapp = mensajeEntrante._data.notifyName || " ";
   (nombreUsuarioWhatsapp.toLowerCase().search(/</)>=0)?nombreUsuarioWhatsapp='Estimado estudiante':nombreUsuarioWhatsapp=nombreUsuarioWhatsapp;
   //console.log(nombreRemitente);
   let numeroUsuarioWhatsapp = mensajeEntrante.from;
