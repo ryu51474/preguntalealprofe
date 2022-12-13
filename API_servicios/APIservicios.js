@@ -24,9 +24,7 @@ function envioNotas(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp){
   let RUT_solicitar_notas = mensajeUsuario.trim(); //no tiene sentido el    .replace(/k/gi,'1') y todo replace 
   if (RUT_solicitar_notas.substring(0,3)=='100') RUT_solicitar_notas=RUT_solicitar_notas.split('100')[1];
   try {
-    ctx.reply(
-      "Espere un momento mientras reviso sus datos."
-    );
+    ctx.reply('${nombreCompletoUsuario}, espera un momento mientras reviso los datos.");
   } catch (error) {
     cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreCompletoUsuario}, dame unos segundos para revisar los datos`);
   }
