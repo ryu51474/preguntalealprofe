@@ -17,16 +17,17 @@ var ahora=new Date();
 
 //seccion whatsapp
 const {MessageMedia} = require('whatsapp-web.js');
+const { Context } = require('telegraf');
 
 //funciones de proceso en la webapi de google sheets
-function envioNotas(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp){//extrae notas del estudiante en un informe
+function envioNotas(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,ctx){//extrae notas del estudiante en un informe
   //si escribe un numero se toma como un rut y se analiza si se puede sacar las notas
-  let RUT_solicitar_notas = mensajeUsuario.trim(); //no tiene sentido el    .replace(/k/gi,'1') y todo replace 
+  let RUT_solicitar_notas = mensajeUsuario.trim(); //no tiene sentido el    .replace(/k/gi,'1') y todo replace porque se pide el rut sin errores
   if (RUT_solicitar_notas.substring(0,3)=='100') RUT_solicitar_notas=RUT_solicitar_notas.split('100')[1];
-  try {
-    ctx.reply('${nombreCompletoUsuario}, espera un momento mientras reviso los datos.');
+  try { 
+    ctx.reply(`Profesor(a) ${nombreCompletoUsuario}, espera un momento mientras reviso los datos.`);   
   } catch (error) {
-    cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreCompletoUsuario}, dame unos segundos para revisar los datos`);
+    cliente.sendMessage(numeroUsuarioWhatsapp,`Profesor(a) ${nombreCompletoUsuario}, dame unos segundos para revisar los datos`);
   }
   fetch(urlApiNotas + RUT_solicitar_notas)
     .then((respuestaApiNotas) => {
@@ -50,7 +51,9 @@ function envioNotas(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp){
                 pathFileNombrearchivo,
                 respuestaTextodeDireccion,
                 (errorescrituraArchivo) => {
-                  console.log(errorescrituraArchivo);
+                  if(errorescrituraArchivo!=null){
+                    console.log(errorescrituraArchivo);
+                  }
                 }
               )
             );
@@ -99,9 +102,9 @@ function envioNotas(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp){
     });
 }
 
-function datosEstudiante(ctx,nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp){//extrae los datos de un estudiante desde la BBDD con el rut
+function datosEstudiante(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,ctx){//extrae los datos de un estudiante desde la BBDD con el rut
   try {
-    ctx.reply(`${nombreCompletoUsuario}, dame unos segundos para revisar los datos`);
+    ctx.reply(`${nombreCompletoUsuario}, dame unos segundos para revisar los datos que me diste`);
   } catch (error) {
     cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreCompletoUsuario}, dame unos segundos para revisar los datos`);
   }
