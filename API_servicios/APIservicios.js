@@ -21,7 +21,7 @@ const {MessageMedia} = require('whatsapp-web.js');
 //funciones de proceso en la webapi de google sheets
 function envioNotas(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp){//extrae notas del estudiante en un informe
   //si escribe un numero se toma como un rut y se analiza si se puede sacar las notas
-  let RUT_solicitar_notas = mensajeUsuario.replace(/[\.,-]/g, "").replace(/[K-k]/g,'1').trim(); //no tiene sentido el    .replace(/k/gi,'1')
+  let RUT_solicitar_notas = mensajeUsuario.trim(); //no tiene sentido el    .replace(/k/gi,'1') y todo replace 
   if (RUT_solicitar_notas.substring(0,3)=='100') RUT_solicitar_notas=RUT_solicitar_notas.split('100')[1];
   try {
     ctx.reply(
