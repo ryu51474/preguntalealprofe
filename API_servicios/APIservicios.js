@@ -43,7 +43,7 @@ function envioNotas(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,c
           if (
             respuestaTextodeDireccion != "Estudiante no existe, reintente"
           ) {
-            var nombreArchivomedia = `informe notas de fisica solicitado por ${nombreCompletoUsuario} al ${ahora.getDate()}-${ahora.getMonth()}-${ahora.getFullYear()}.html`;
+            var nombreArchivomedia = `informe notas de fisica solicitado por ${nombreCompletoUsuario} al ${ahora.getDate()}-${ahora.getMonth()+1}-${ahora.getFullYear()}.html`;
             var pathFileNombrearchivo = `./informes/${nombreArchivomedia}`;
             //escribo el archivo localmente
             new MessageMedia(//este acto es solo para whatsapp, telegram no lo necesita
