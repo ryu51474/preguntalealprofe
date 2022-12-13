@@ -25,9 +25,9 @@ function envioNotas(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,c
   let RUT_solicitar_notas = mensajeUsuario.trim(); //no tiene sentido el    .replace(/k/gi,'1') y todo replace porque se pide el rut sin errores
   if (RUT_solicitar_notas.substring(0,3)=='100') RUT_solicitar_notas=RUT_solicitar_notas.split('100')[1];
   try { 
-    ctx.reply(`Profesor(a) ${nombreCompletoUsuario}, espera un momento mientras reviso los datos.`);   
+    ctx.reply(`${nombreCompletoUsuario}, espera un momento mientras reviso los datos.`);   
   } catch (error) {
-    cliente.sendMessage(numeroUsuarioWhatsapp,`Profesor(a) ${nombreCompletoUsuario}, dame unos segundos para revisar los datos`);
+    cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreCompletoUsuario}, dame unos segundos para revisar los datos`);
   }
   fetch(urlApiNotas + RUT_solicitar_notas)
     .then((respuestaApiNotas) => {
@@ -104,9 +104,9 @@ function envioNotas(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,c
 
 function datosEstudiante(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,ctx){//extrae los datos de un estudiante desde la BBDD con el rut
   try {
-    ctx.reply(`${nombreCompletoUsuario}, dame unos segundos para revisar los datos que me diste`);
+    ctx.reply(`Profesor(a) ${nombreCompletoUsuario}, dame unos segundos para revisar los datos que me diste`);
   } catch (error) {
-    cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreCompletoUsuario}, dame unos segundos para revisar los datos`);
+    cliente.sendMessage(numeroUsuarioWhatsapp,`Profesor(a) ${nombreCompletoUsuario}, dame unos segundos para revisar los datos`);
   }
   mensajeUsuario = mensajeUsuario.split(' ')[1]  
   let RUT_solicitar_datos = mensajeUsuario.replace(/[\.,-]/g, "").replace(/[K-k]/g,'1').trim();
@@ -175,7 +175,7 @@ function inscripcionAlSistema(mensajeUsuario) {//inscribe al alumno al sistema d
   return linkIncripcion;
 }
 
-function cambioEmail(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp){//cambia email del alumno en la BBDD
+function cambioEmail(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,ctx){//cambia email del alumno en la BBDD
   //console.log('Inicia sistema de cambio de email llamado');
   let respuestaACambioStandard = `${nombreCompletoUsuario}, cambio tu email a ${mensajeUsuario.split(',')[1]} ahora mismo, dame unos segundos para verificar tus datos`;
   try {

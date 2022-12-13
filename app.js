@@ -164,7 +164,7 @@ bot.on('text', async (ctx)=>{
     //let RUT_paraCambioEmail = rutconEmail[0].replace(/[\.,-]/g, '').replace(/[K-k]/g,'1').replace(/\s+/g,'');
     var nuevoEmailalumno = rutconEmail[1].replace(/\s+/g,'')
     if (validadorEmail.validate(nuevoEmailalumno)){
-      cambioEmail(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null);
+      cambioEmail(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null,ctx);
     } else {ctx.reply(`${nuevoEmailalumno} no es un email valido. Reintente según instrucciones`)}
   } else {/**contesta cleverbot */
     clever(mensajeUsuarioTelegram)
@@ -301,7 +301,7 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
     //console.log(nuevoEmailalumno);
     if (validadorEmail.validate(nuevoEmailalumno)){
       //console.log(`${nuevoEmailalumno} es un email valido`);
-      cambioEmail(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp,numeroUsuarioWhatsapp);
+      cambioEmail(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp,numeroUsuarioWhatsapp,null);
     } else {cliente.sendMessage(numeroUsuarioWhatsapp,`${nuevoEmailalumno} no es un email valido. Reintente según instrucciones`)}
   } else {/**contesta cleverbot */
     clever(cuerpoMensajeWhatsapp)
