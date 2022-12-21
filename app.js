@@ -16,6 +16,7 @@ const {tokenTlgrm} = require('./config');
 const { cambioEmail,envioNotas,datosEstudiante,inscripcionAlSistema } = require('./API_servicios/APIservicios');
 const BOT_TOKEN = tokenTlgrm();//token telegram
 
+//mensajes constantes de respuesta
 const menuOpciones=`Estas son las opciones: escribe en palabras tu solicitud segun lo que quieras hacer\n`+
 '1.- Escribe **opciones** para volver a ver este mensaje.\n'+
 '2.- Puedes **pedir notas** simplemente escribiéndolo.\n'+
@@ -24,6 +25,43 @@ const menuOpciones=`Estas son las opciones: escribe en palabras tu solicitud seg
 const finalMenuOpcionesTelegram='\nTambién puedes usar el listado de comandos con el botón MENU\n'+
 '👇 aquí'
 const chatFormBotGoogle = 'https://chat-forms.com/forms/1614949217593-mnk/?form'
+const complmentoInstruccionesRutNotasEstudiantes=',  si deseas saber notas debes de ahora ingresar solo tu rut, sin puntos ni guión, en caso de terminar en k reemplácelo con un 1, ej: el rut 12.345.678-k se escribe 123456781. si eres extranjero,  SE INCLUYE EL 100. SI NO LO HACE CORRECTAMENTE SU PETICION SERA ANULADA E IGNORADA (Puede que se responda con cualquier cosa absurda)';
+const complementoInstruccionesRutDatosEstudianteParaDocentes=', para solicitar los datos de algun estudiante debes usar el comando, un espacio y el rut del estudiante sin puntos ni guión En caso de terminar en k, reemplácelo por un 1 en esta forma exactamente por ejemplo: /datos 123456781 '+
+                                                             '\nSi es rut extranjero NO incluya e 100';
+const complementoInstruccionesCambioEmail=', para cambiar tu email en el que recibes las notas debes escribir ahora tu rut sin puntos ni guion seguido de una coma y el nuevo email. SIN ESPACIOS o su solicitud será rechazada. En caso que su rut termine en k reemplácelo por un 1. Si es extranjero no escriba el 100 '+
+                                          '\n ej: 123456781,nuevocorreo@gmail.com';
+const complementoMensajeErrorDatosParaDocentes=', no me mandaste los datos despues del comando /datos. '+
+                                                '\nReintenta como se te indicó cuando escribiste /profesor ';
+const complementoMensajeUnoInscripcion=', para inscribirse al sistema del profesor debes REEMPLAZAR y ENVIAR los siguientes datos tal como se te indica. NO OLVIDES LAS REGLAS, como por ejemplo el uso correcto de las Mayusculas, no usar tildes, el rut como el ejemplo y NO BORRAR LA COMA al final de cada dato'+
+                                        '\nO TENDRAS QUE HACERLO DE NUEVO\n';
+const complementoMensajeDosInscripcion='***copia y cambia los datos por los tuyos***\n'+
+                                       '***cuando termines me los envias***\n'+
+                                       '***👇👇👇👇👇👇👇👇👇👇👇***\n';
+const complementoMensajeTresInscripcion = 'Estudiante,\n'+
+                                          'Primer_Nombre: Alan,\n'+
+                                          '2_Apellidos: Brito Delgado,\n'+
+                                          'RUT: 12345678-5,\n'+
+                                          'numero_de_lista : 3,\n'+
+                                          'correo: correo@ejemplo.com,\n'+
+                                          'curso: 2A,\n'+
+                                          'Direccion: blanco encalada 1250 Talcahuano,\n'+
+                                          'Telefono: +56912345678,\n'+
+                                          'Nombre_y_Apellido_Apoderado: Zoila Vaca,\n'+
+                                          'Telefono_Apoderado: +56987654321';
+const complementoMensajeErrorApellidos= ', si tus apellidos son compuestos escríbelos como una sola palabra. '+
+                                        '\nEj: **San Martin** debes escribirlo como **Sanmartin**'+
+                                        '\nCorrígelo y vuelve a enviarme los datos.'+
+                                        '\nSi consideras que tu escribiste bien, verifica que no hay dos espacios entre tus dos apellidos';
+const complementoErrorTelefono = ', al parecer alguno de los números de teléfono esta incorrecto, verifícalo (no olvides el + antes del 56). si lo necesitas pídele ayuda a tu profesor';
+const complementoErrorIgualTelefono = ', no puedes poner el mismo número de teléfono para ti y tu apoderado. Favor corrígelo';
+const complementoDatosCorrectos = ', por favor revisa cuidadosamente que los datos que me diste estén correctos en el siguiente link y pulsa SIGUIENTE hasta VER Y pulsar ENVIAR para terminar';
+const complementoMalaInscripcionUno = 'Te equivocaste en los datos 😔, verifícalos.'+
+                                       '\nVerifica si borraste por error alguna coma o algo de la plantilla que te di que no debías borrar y vuelve a enviármelos'+
+                                       '\nSi tienes dudas pídele ayuda a tu profesor o escribe /online ';
+const complementoMalaInscripcionDos = ' para darte ayudarte yo de otra manera en la web mediante google ';
+const complementoMensajeComandoOnline = ', accede al siguiente link para inscribirte paso a paso mediante google chat form '
+const mensajeDespedidaConUrlPropia="Chao. Para mas información visita cuando quieras https://www.profedaniel.cf"
+const inicioMensajeErrorCleverBot='Por el momento tengo problemas para responder. Escríbeme mas tarde '
 //INICIOS DE BOTS
 //inicio bot whatsapp
 cliente = new Client({
@@ -78,54 +116,33 @@ bot.on('text', async (ctx)=>{
               `\nSi eres profesor sigue las instrucciones de acceso que te dieron`)
     //console.log(mensajeRespuestaSaludoAzar)
   } else if (mensajeUsuarioTelegram.search(/nota/)>=0){//si en el mensaje existe la palabra nota da instrucciones para recibir notas
-    ctx.reply(`${nombreUsuarioTelegram},  si deseas saber notas debes de ahora ingresar solo tu rut, sin puntos ni guión, en caso de terminar en k reemplácelo con un 1, ej: el rut 12.345.678-k se escribe 123456781. si eres extranjero,  SE INCLUYE EL 100. SI NO LO HACE CORRECTAMENTE SU PETICION SERA ANULADA E IGNORADA (Puede que se responda con cualquier cosa absurda)`)
+    ctx.reply(`${nombreUsuarioTelegram}`+complmentoInstruccionesRutNotasEstudiantes)
   } else if (!isNaN(mensajeUsuarioTelegram)&&mensajeUsuarioTelegram.length>=9){
       envioNotas(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null,ctx);
   } else if (mensajeUsuarioTelegram.normalize("NFD").replace(/[\u0300-\u036f]/g, "").search(/adios/) >= 0||mensajeUsuarioTelegram.search(/chao/) >= 0) {//despedida con mensaje final
-    ctx.reply(
-      "Chao. Para mas información visita cuando quieras https://www.profedaniel.cf"
-    );
+    ctx.reply(mensajeDespedidaConUrlPropia);
   } else if (mensajeUsuarioTelegram.search(/email/)>=0){//instrucciones de cambio de email en la base de datos
     //console.log('inicio de envio de  INSTRUCCIONES DE  cambio de email');
-    ctx.reply(`${nombreUsuarioTelegram}, para cambiar tu email en el que recibes las notas debes escribir ahora tu rut sin puntos ni guion seguido de una coma y el nuevo email. SIN ESPACIOS o su solicitud será rechazada. En caso que su rut termine en k reemplácelo por un 1. Si es extranjero no escriba el 100 \n ej: 123456781,nuevocorreo@gmail.com`)
+    ctx.reply(`${nombreUsuarioTelegram}`+complementoInstruccionesCambioEmail);
   } else if (mensajeUsuarioTelegram.search(/opciones/)>=0){//opciones del bot y sus acciones
     ctx.reply(ctx.from.first_name+'\n'+menuOpciones+finalMenuOpcionesTelegram)
   } else if(mensajeUsuarioTelegram.search(/\/docente/)==0){//instrucciones especificas para profesor
-    ctx.reply(`Profesor(a) ${nombreUsuarioTelegram}, para solicitar los datos de algun estudiante `+
-                                     `debes usar el comando, un espacio y el rut del estudiante sin puntos ni guión. `+
-                                     `En caso de terminar en k, reemplácelo por un 1 en esta forma exactamente por ejemplo:`+
-                                     `\n /datos 123456781 `+
-                                     `\nSi es rut extranjero NO incluya el 100`)
+    ctx.reply(`Profesor(a) ${nombreUsuarioTelegram}`+complementoInstruccionesRutDatosEstudianteParaDocentes);
   } else if(mensajeUsuarioTelegram.search(/\/datos/)==0){
       if (mensajeUsuarioTelegram.trim()==='/datos') {
-        ctx.reply(`Profesor(a) ${nombreCompletoUsuarioTelegram}, no me mandaste los datos despues del comando /datos. 
-                  \nReintenta como se te indicó cuando escribiste /profesor (👈🏾 tócalo si quieres recordar las instrucciones)`)
+        ctx.reply(`Profesor(a) ${nombreCompletoUsuarioTelegram}`+complementoMensajeErrorDatosParaDocentes+'(👈🏾 tócalo si quieres recordar las instrucciones)')
       } else {
         datosEstudiante(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null,ctx);
       }
   } else if (mensajeUsuarioTelegram.search(/inscribirme/)>=0){
     
-    await ctx.reply(`${nombreUsuarioTelegram}, para inscribirse al sistema del profesor debes REEMPLAZAR y ENVIAR los siguientes datos tal como se te indica. NO OLVIDES LAS REGLAS, como por ejemplo el uso correcto de las Mayusculas, no usar tildes, el rut como el ejemplo y NO BORRAR LA COMA al final de cada dato\n O TENDRAS QUE HACERLO DE NUEVO\n`);
+    await ctx.reply(`${nombreUsuarioTelegram}`+complementoMensajeUnoInscripcion);
     
     setTimeout( async ()=>
-     await ctx.reply('***copia y cambia los datos por los tuyos***\n'+
-                    '***cuando termines me los envias***\n'+
-                    '***👇👇👇👇👇👇👇👇👇👇👇***\n'),3000);
+     await ctx.reply(complementoMensajeDosInscripcion),3000);
     
     setTimeout( async ()=>
-    await ctx.reply(
-              'Estudiante,\n'+
-              'Primer_Nombre: Alan,\n'+
-              '2_Apellidos: Brito Delgado,\n'+
-              'RUT: 12345678-5,\n'+
-              'numero_de_lista : 3,\n'+
-              'correo: correo@ejemplo.com,\n'+
-              'curso: 2A,\n'+
-              'Direccion: blanco encalada 1250 Talcahuano,\n'+
-              'Telefono: +56912345678,\n'+
-              'Nombre_y_Apellido_Apoderado: Zoila Vaca,\n'+
-              'Telefono_Apoderado: +56987654321'
-              ),9000);
+    await ctx.reply(complementoMensajeTresInscripcion),9000);
   } else if(mensajeUsuarioTelegram.search(/estudiante,/)==0){//funcion para inscribir alumno nuevo en sistema
     //ctx.reply('datos estudiante' + mensajeUsuario.split(',').length);//linea de pruebas del mensaje
     let apellidosVerificar = mensajeUsuarioTelegram.split(',')[2].split(':')[1].trim();
@@ -134,28 +151,24 @@ bot.on('text', async (ctx)=>{
     let fono_apoderado = mensajeUsuarioTelegram.split(',')[10].split(':')[1].replace(/\s+/g,'');
     if (apellidosVerificar.split(' ').length>2) {
       ctx.reply('Escribiste '+apellidosVerificar.split(/ /).length+' palabras en tus apellidos')
-      return ctx.reply(`${nombreUsuarioTelegram}, si tus apellidos son compuestos escríbelos como una sola palabra. \nEj: **San Martin** debes escribirlo como **Sanmartin**
-                        \nCorrígelo y vuelve a enviarme los datos.
-                        \nSi consideras que tu escribiste bien, verifica que no hay dos espacios entre tus dos apellidos`)
+      return ctx.reply(`${nombreUsuarioTelegram}`+complementoMensajeErrorApellidos)
     }
     if (fono.length!=12||fono_apoderado.length!=12) {
-      return ctx.reply(`${nombreUsuarioTelegram}, al parecer alguno de los números de teléfono esta incorrecto, verifícalo (no olvides el + antes del 56). si lo necesitas pídele ayuda a tu profesor`)
+      return ctx.reply(`${nombreUsuarioTelegram}`+complementoErrorTelefono)
     }else if(fono===fono_apoderado){
-      return ctx.reply(`${nombreUsuarioTelegram}, no puedes poner el mismo número de teléfono para ti y tu apoderado. Favor corrígelo`)
+      return ctx.reply(`${nombreUsuarioTelegram}`+complementoErrorIgualTelefono)
     }
 
     if(validaRut(rutAverificar)&&mensajeUsuarioTelegram.split(',').length==11){
       let resultadoInscripcion=inscripcionAlSistema(mensajeUsuarioTelegram)
-      await ctx.reply(`${nombreUsuarioTelegram}, por favor revisa cuidadosamente que los datos que me diste estén correctos en el siguiente link y pulsa SIGUIENTE hasta VER Y pulsar ENVIAR para terminar`);
+      await ctx.reply(`${nombreUsuarioTelegram}`+complementoDatosCorrectos);
       setTimeout(async()=>await ctx.reply(resultadoInscripcion),6000);
     } else {
-      ctx.reply('Te equivocaste en los datos 😔, verifícalos.'+
-                '\nVerifica si borraste por error alguna coma o algo de la plantilla que te di que no debías borrar y vuelve a enviármelos'+
-                '\nSi tienes dudas pídele ayuda a tu profesor o escribe /online (👈🏾 tócalo si no quieres escribir) para darte ayudarte yo de otra manera en la web mediante google')
+      ctx.reply(complementoMalaInscripcionUno+'(👈🏾 tócalo si no quieres escribir)'+complementoMalaInscripcionDos)
     }
     
   } else if (mensajeUsuarioTelegram.search(/\/online/)==0){
-    await ctx.reply(`${nombreUsuarioTelegram}, accede al siguiente link para inscribirte paso a paso mediante google chat form`)
+    await ctx.reply(`${nombreUsuarioTelegram}`+ complementoMensajeComandoOnline)
     setTimeout(async()=>await ctx.reply(chatFormBotGoogle),3000)//https://chat-forms.com/forms/1614949217593-mnk/?form
   } else if(mensajeUsuarioTelegram.search(/@/)>=0){
     //se analiza si esta correcto el mensaje
@@ -173,10 +186,8 @@ bot.on('text', async (ctx)=>{
         ctx.reply(respuestacleverBot);
       })
       .catch((errorCleverbot) => {
-        console.log(errorCleverbot);
-        ctx.reply(
-          `Por el momento tengo problemas para responder. escribeme mas tarde ${nombreUsuarioTelegram}`
-        );
+        //console.log(errorCleverbot);
+        ctx.reply(inicioMensajeErrorCleverBot+`${nombreUsuarioTelegram}`);
       });
   }
 })
@@ -208,57 +219,34 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
     await cliente.sendMessage(numeroUsuarioWhatsapp,`Si deseas saber que puedo hacer por ti puedes escribir **opciones** para saberlo.`+
                                       `\n Si eres profesor sigue las instrucciones de acceso que te dieron`)
   } else if (cuerpoMensajeWhatsapp.search(/nota/) >= 0) {//si en el mensaje existe la palabra nota da instrucciones para recibir notas
-    cliente.sendMessage(
-      numeroUsuarioWhatsapp,
-      `${nombreUsuarioWhatsapp}, si deseas saber notas debes de ahora ingresar solo tu rut, sin puntos ni guión, en caso de terminar en k reemplácelo con un 1, ej: el rut 12.345.678-k se escribe 123456781. Si eres extranjero, SE INCLUYE EL 100. SI NO LO HACE CORRECTAMENTE SU PETICION SERA ANULADA E IGNORADA (Puede que se responda con cualquier cosa absurda)`
-    );
+    cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}`+complmentoInstruccionesRutNotasEstudiantes);
   } else if (!isNaN(cuerpoMensajeWhatsapp)&&cuerpoMensajeWhatsapp.length>=9) {//envio de notas usando solo el rut
     envioNotas(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp,numeroUsuarioWhatsapp,null);
   } else if (cuerpoMensajeWhatsapp.normalize("NFD").replace(/[\u0300-\u036f]/g, "").search(/adios/) >= 0||cuerpoMensajeWhatsapp.search(/chao/) >= 0) {//despedida con mensaje final
-    mensajeEntrante.reply(
-      "Chao. Para mas información visita cuando quieras https://www.profedaniel.cf"
-    );
+    mensajeEntrante.reply(mensajeDespedidaConUrlPropia);
   } else if (cuerpoMensajeWhatsapp.search(/email/)>=0){//instrucciones de cambio de email en la base de datos
     //console.log('inicio de envio de  INSTRUCCIONES DE  cambio de email');
-    cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}, para cambiar tu email en el que recibes las notas debes escribir ahora tu rut sin puntos ni guion seguido de una coma y el nuevo email. SIN ESPACIOS o su solicitud será rechazada. En caso que su rut termine en k reemplácelo por un 1. Si es extranjero no escriba el 100 \n ej: 123456781,nuevocorreo@gmail.com`)
+    cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}`+complementoInstruccionesCambioEmail)
   } else if (cuerpoMensajeWhatsapp.search(/opciones/)>=0){//opciones del bot y sus acciones
     cliente.sendMessage(numeroUsuarioWhatsapp,nombreUsuarioWhatsapp+'\n'+menuOpciones)
   } else if(cuerpoMensajeWhatsapp.search(/\/docente/)>=0){
-    cliente.sendMessage(numeroUsuarioWhatsapp,`Profesor(a) ${nombreUsuarioWhatsapp}, para solicitar los datos de algun estudiante `+
-                                     `debes usar el comando, un espacio y el rut del estudiante sin puntos ni guión. `+
-                                     `En caso de terminar en k, reemplácelo por un 1 en esta forma exactamente por ejemplo: /datos 123456781 `+
-                                     `\nSi es rut extranjero NO incluya e 100`)
+    cliente.sendMessage(numeroUsuarioWhatsapp,`Profesor(a) ${nombreUsuarioWhatsapp}`+complementoInstruccionesRutDatosEstudianteParaDocentes)
   } else if(cuerpoMensajeWhatsapp.search(/\/datos/)>=0){
       if (cuerpoMensajeWhatsapp.trim()==='/datos'){
         cliente.sendMessage(numeroUsuarioWhatsapp,
-          `Profesor(a) ${nombreUsuarioWhatsapp}, no me mandaste los datos despues del comando /datos.
-          \nReintenta como se te indicó cuando escribiste /profesor (👈🏾 vuelve a escribirlo así si quieres recordar las instrucciones)`);
+          `Profesor(a) ${nombreUsuarioWhatsapp}`+complementoMensajeErrorDatosParaDocentes+'(👈🏾 vuelve a escribirlo así si quieres recordar las instrucciones)');
       } else{      
         datosEstudiante(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp,numeroUsuarioWhatsapp,null);
       }
   } else if (cuerpoMensajeWhatsapp.search(/inscribirme/)>=0){
     
-    await cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}, para inscribirse al sistema del profesor debes REEMPLAZAR y ENVIAR los siguientes datos tal como se te indica. NO OLVIDES LAS REGLAS, como por ejemplo el uso correcto de las Mayusculas, no usar tildes, el rut como el ejemplo y NO BORRAR LA COMA al final de cada dato\n O TENDRAS QUE HACERLO DE NUEVO\n`);
+    await cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}`+complementoMensajeUnoInscripcion);
     
     setTimeout( async ()=>
-     await cliente.sendMessage(numeroUsuarioWhatsapp,'***copia y cambia los datos por los tuyos***\n'+
-                    '***cuando termines me los envias***\n'+
-                    '***👇👇👇👇👇👇👇👇👇👇👇***\n'),3000);
+     await cliente.sendMessage(numeroUsuarioWhatsapp,complementoMensajeDosInscripcion),3000);
     
     setTimeout( async ()=>
-    await cliente.sendMessage(numeroUsuarioWhatsapp,
-              'Estudiante,\n'+
-              'Primer_Nombre: Alan,\n'+
-              '2_Apellidos: Brito Delgado,\n'+
-              'RUT: 12345678-5,\n'+
-              'numero_de_lista : 3,\n'+
-              'correo: correo@ejemplo.com,\n'+
-              'curso: 2A,\n'+
-              'Direccion: blanco encalada 1250 Talcahuano,\n'+
-              'Telefono: +56912345678,\n'+
-              'Nombre_y_Apellido_Apoderado: Zoila Vaca,\n'+
-              'Telefono_Apoderado: +56987654321'
-              ),9000);
+    await cliente.sendMessage(numeroUsuarioWhatsapp,complementoMensajeTresInscripcion),9000);
   } else if(cuerpoMensajeWhatsapp.search(/estudiante,/)==0){//funcion para inscribir alumno nuevo en sistema
     //ctx.reply('datos estudiante' + mensajeUsuario.split(',').length);//linea de pruebas del mensaje
     //cliente.sendMessage(numeroUsuarioWhatsapp,'datos estudiante' + mensajeUsuario.split(',').length);//linea de pruebas del mensaje
@@ -268,29 +256,24 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
     let fono_apoderado = cuerpoMensajeWhatsapp.split(',')[10].split(':')[1].replace(/\s+/g,'');
     if (apellidosVerificar.split(' ').length>2) {
       cliente.sendMessage(numeroUsuarioWhatsapp,'Escribiste '+apellidosVerificar.split(/ /).length+' palabras en tus apellidos')
-      return cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}, si tus apellidos son compuestos escríbelos como una sola palabra. \nEj: **San Martin** debes escribirlo como **Sanmartin**
-                        \nCorrígelo y vuelve a enviarme los datos.
-                        \nSi consideras que tu escribiste bien, verifica que no hay dos espacios entre tus dos apellidos`)
+      return cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}`+complementoMensajeErrorApellidos)
     }
     if (fono.length!=12||fono_apoderado.length!=12) {
-      return cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}, al parecer alguno de los números de teléfono esta incorrecto, verifícalo (no olvides el + antes del 56). si lo necesitas pídele ayuda a tu profesor`)
+      return cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}`+complementoErrorTelefono)
     }else if(fono===fono_apoderado){
-      return cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}, no puedes poner el mismo número de teléfono para ti y tu apoderado. Favor corrígelo`)
+      return cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}`+complementoErrorIgualTelefono)
     }
 
     if(validaRut(rutAverificar)&&cuerpoMensajeWhatsapp.split(',').length==11){
       let resultadoInscripcion=inscripcionAlSistema(cuerpoMensajeWhatsapp)
-      await cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}, por favor revisa cuidadosamente que los datos que me diste estén correctos en el siguiente link y pulsa SIGUIENTE hasta VER Y pulsar ENVIAR para terminar`);
+      await cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}`+complementoDatosCorrectos);
       setTimeout(async()=>await cliente.sendMessage(numeroUsuarioWhatsapp,resultadoInscripcion),6000);
     } else {
-      cliente.sendMessage(numeroUsuarioWhatsapp,
-                'Te equivocaste en los datos 😔, verifícalos.'+
-                '\nVerifica si borraste por error alguna coma o algo de la plantilla que te di que no debías borrar y vuelve a enviármelos'+
-                '\nSi tienes dudas pídele ayuda a tu profesor o escribe /online (👈🏾 exactamente de esa forma con la barra inclinada junta) para darte ayudarte yo de otra manera en la web mediante google')
+      cliente.sendMessage(numeroUsuarioWhatsapp,complementoMalaInscripcionUno+'(👈🏾 exactamente de esa forma con la barra inclinada junta)'+complementoMalaInscripcionDos)
     }
     
   } else if (cuerpoMensajeWhatsapp.search(/\/online/)==0){
-    await cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}, accede al siguiente link para inscribirte paso a paso mediante google chat form`)
+    await cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}`+complementoMensajeComandoOnline)
     setTimeout(async()=>await cliente.sendMessage(numeroUsuarioWhatsapp,chatFormBotGoogle),3000)//https://chat-forms.com/forms/1614949217593-mnk/?form
   } else if(cuerpoMensajeWhatsapp.search(/@/)>=0){
     //se analiza si esta correcto el mensaje
@@ -310,11 +293,8 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
         cliente.sendMessage(numeroUsuarioWhatsapp, respuestacleverBot);
       })
       .catch((errorCleverbot) => {
-        console.log(errorCleverbot);
-        cliente.sendMessage(
-          numeroUsuarioWhatsapp,
-          `Por el momento tengo problemas para responder. escribeme mas tarde ${nombreUsuarioWhatsapp}`
-        );
+        //console.log(errorCleverbot);
+        cliente.sendMessage(numeroUsuarioWhatsapp, inicioMensajeErrorCleverBot+`${nombreUsuarioWhatsapp}`);
       });
   }
 });

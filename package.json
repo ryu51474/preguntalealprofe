@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "cleverbot-free": "^1.1.11",
+    "dotenv": "^16.0.3",
     "email-validator": "^2.0.4",
     "isomorphic-fetch": "^3.0.0",
     "nodemon": "^2.0.20",
