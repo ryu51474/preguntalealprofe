@@ -1,10 +1,11 @@
+require('dotenv').config()
 const urlApiNotas =
     "https://script.google.com/macros/s/AKfycbyYYD23WAZ2_XBfRBgbeX4R5XqCwbfaPvrYkKQ38Dh7J3oPGKKQqv-3l8m8XxR_OaEKoQ/exec?sdata=";
 const urlApiNuevoEmail =
     "https://script.google.com/macros/s/AKfycbyYYD23WAZ2_XBfRBgbeX4R5XqCwbfaPvrYkKQ38Dh7J3oPGKKQqv-3l8m8XxR_OaEKoQ/exec?sdata=";
 const urlApiDatosEstudiante =
     "https://script.google.com/macros/s/AKfycbyYYD23WAZ2_XBfRBgbeX4R5XqCwbfaPvrYkKQ38Dh7J3oPGKKQqv-3l8m8XxR_OaEKoQ/exec?sdata=datosEstudiante,";
-const numeroAdmin='56964289005';
+const numeroAdmin=process.env.numeroAdmin//ejemplo '56964289005';
 //la const de aqui abajo se usa como modelo
 //no se puede usar como const por variables intermedias
 //const urlApiInscripcionEstudiante = "https://docs.google.com/forms/d/e/1FAIpQLSf3HzUYOd3OZikZMSBE1VOG6rgS0PkUOIIlAuEFyXHeM8V40A/viewform?usp=pp_url&entry.2005620554=Alan&entry.691594478=Brito+Delgado+&entry.450021770=123456785&entry.1128966543=99&entry.1045781291=ryu51474@gmail.com&entry.1414220081=2AC25&entry.1065046570=direcci%C3%B3n+de+sauces+5+mz+246+villa+4&entry.1166974658=%2B56999999999&entry.839337160=Zoila+Vaca&entry.2030694607=%2B56888888888"
