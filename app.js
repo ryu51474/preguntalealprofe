@@ -13,7 +13,7 @@ const validadorEmail = require('email-validator');
 
 //modulo propios externos
 const {tokenTlgrm} = require('./config');
-const { cambioEmail,envioNotas,datosEstudiante,inscripcionAlSistema,preguntaleAlProfeAI } = require('./API_servicios/APIservicios');
+const { cambioEmail,envioNotas,datosEstudiante,inscripcionAlSistema,preguntaleAlProfeAI,sapoderado } = require('./API_servicios/APIservicios');
 const BOT_TOKEN = tokenTlgrm();//token telegram
 
 //mensajes constantes de respuesta
@@ -21,13 +21,15 @@ const menuOpciones=`Estas son las opciones: escribe en palabras tu solicitud seg
 '1.- Escribe **opciones** para volver a ver este mensaje.\n'+
 '2.- Puedes **pedir notas** simplemente escribiéndolo.\n'+
 '3.- Pídeme **cambiar email** para cambiar tu correo para recibir resultados de las pruebas.\n'+
-'4.- Dime **quiero inscribirme** si no te has inscrito antes al sistema del profesor Daniel.';
+'4.- Dime **quiero inscribirme** si no te has inscrito antes al sistema del profesor Daniel.\n'+
+'Si quieres algo distinto a lo anterior, lo que quieras de cualquier tema, de tus tareas escolares, curiosidades, etc. , pídemelo directamente (como si fuera gogle)';
 const finalMenuOpcionesTelegram='\nTambién puedes usar el listado de comandos con el botón MENU\n'+
 '👇 aquí'
 const chatFormBotGoogle = 'https://chat-forms.com/forms/1614949217593-mnk/?form'
 const complmentoInstruccionesRutNotasEstudiantes=',  si deseas saber notas debes de ahora ingresar solo tu rut, sin puntos ni guión, en caso de terminar en k reemplácelo con un 1, ej: el rut 12.345.678-k se escribe 123456781. si eres extranjero,  SE INCLUYE EL 100. SI NO LO HACE CORRECTAMENTE SU PETICION SERA ANULADA E IGNORADA (Puede que se responda con cualquier cosa absurda)';
-const complementoInstruccionesRutDatosEstudianteParaDocentes=', para solicitar los datos de algun estudiante debes usar el comando, un espacio y el rut del estudiante sin puntos ni guión En caso de terminar en k, reemplácelo por un 1 en esta forma exactamente por ejemplo: /datos 123456781 '+
-                                                             '\nSi es rut extranjero NO incluya e 100';
+const complementoInstruccionesRutDatosEstudianteParaDocentes=', para solicitar los datos de algun estudiante debes usar el comando /datos, un espacio y el rut del estudiante sin puntos ni guión En caso de terminar en k, reemplácelo por un 1 en esta forma exactamente por ejemplo:\n /datos 123456781 \n'+
+                                                             'Si es rut extranjero NO incluya e 100\n\n'+
+                                                             'Si no conoces el rut del estudiante me es difícil ayudarte, quizás te sirva buscar los datos del apoderado por sus nombres usando el comando /sapoderado (si, tal cual, sapo-derado) seguido de los nombres y apellidos que conozcas del apoderado, si son más, mejor. (ej: /sapoderado Alma Marcela Gozo Ricco)';
 const complementoInstruccionesCambioEmail=', para cambiar tu email en el que recibes las notas debes escribir ahora tu rut sin puntos ni guion seguido de una coma y el nuevo email. SIN ESPACIOS o su solicitud será rechazada. En caso que su rut termine en k reemplácelo por un 1. Si es extranjero no escriba el 100 '+
                                           '\n ej: 123456781,nuevocorreo@gmail.com';
 const complementoMensajeErrorDatosParaDocentes=', no me mandaste los datos despues del comando /datos. '+
@@ -170,6 +172,14 @@ bot.on('text', async (ctx)=>{
   } else if (mensajeUsuarioTelegram.search(/\/online/)==0){
     await ctx.reply(`${nombreUsuarioTelegram}`+ complementoMensajeComandoOnline)
     setTimeout(async()=>await ctx.reply(chatFormBotGoogle),3000)//https://chat-forms.com/forms/1614949217593-mnk/?form
+  } else if(mensajeUsuarioTelegram.search(/\/sapoderado/)==0){//funcion de busqueda de datos para sapoderados
+    ctx.reply('jajaja usaste el comando "sapoderado" 😂');
+    if(!mensajeUsuarioTelegram.replace(/\/sapoderado/g,'')){
+      ctx.reply('ESCRIBA despues del comando\n"/sapoderado"\n el nombre y apellido de la persona que va a consultar!\n ej: ***/sapoderado Zoila Vaca Gando*** (sin los asteriscos)\n SI TOCA EL COMANDO SOLO SE REPETIRÁ ESTE MENSAJE \nNO SEA ESTÙPIDO');
+    } else {
+      sapoderado(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null,ctx)
+    }
+    //sapoderado(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null,ctx);
   } else if(mensajeUsuarioTelegram.search(/@/)>=0){
     //se analiza si esta correcto el mensaje
     let rutconEmail = mensajeUsuarioTelegram.split(',')
@@ -182,11 +192,11 @@ bot.on('text', async (ctx)=>{
   } else {/**contesta open ai de estar disponible y en caso de emergencia cleverbot*/
     try {
       preguntaleAlProfeAI(mensajeUsuarioTelegram)
-      .then(async (resultadoRespuestaOpenAI)=>{
-        await
-        ctx.reply(resultadoRespuestaOpenAI);
-        //console.log(resultadoRespuestaOpenAI);
-      })
+        .then(async (resultadoRespuestaOpenAI)=>{
+          await
+          ctx.reply(resultadoRespuestaOpenAI);
+          //console.log(resultadoRespuestaOpenAI);
+        })
     } catch (error) {
       clever(mensajeUsuarioTelegram)
         .then(async (respuestacleverBot) => {
@@ -298,20 +308,20 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
   } else {/**contesta open ai de estar disponible y en caso de emergencia cleverbot*/
     try {
       preguntaleAlProfeAI(cuerpoMensajeWhatsapp)
-    .then(async (resultadoRespuestaOpenAI)=>{
-      await
-      cliente.sendMessage(numeroUsuarioWhatsapp,resultadoRespuestaOpenAI.replace(/\n\n/g,''));
-    })
+        .then(async (resultadoRespuestaOpenAI)=>{
+          await
+          cliente.sendMessage(numeroUsuarioWhatsapp,resultadoRespuestaOpenAI.replace(/\n\n/g,''));
+        })
     } catch (error) {
       clever(cuerpoMensajeWhatsapp)
-      .then(async (respuestacleverBot) => {
-        await //console.log("respuesta cleverbot: " + respuestacleverBot);
-        cliente.sendMessage(numeroUsuarioWhatsapp, respuestacleverBot);
-      })
-      .catch((errorCleverbot) => {
-        //console.log(errorCleverbot);
-        cliente.sendMessage(numeroUsuarioWhatsapp, inicioMensajeErrorCleverBot+`${nombreUsuarioWhatsapp}`);
-      })
+        .then(async (respuestacleverBot) => {
+          await //console.log("respuesta cleverbot: " + respuestacleverBot);
+          cliente.sendMessage(numeroUsuarioWhatsapp, respuestacleverBot);
+        })
+        .catch((errorCleverbot) => {
+          //console.log(errorCleverbot);
+          cliente.sendMessage(numeroUsuarioWhatsapp, inicioMensajeErrorCleverBot+`${nombreUsuarioWhatsapp}`);
+        })
     }
   }
 });

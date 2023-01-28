@@ -7,13 +7,17 @@ const urlApiNuevoEmail =
 const urlApiDatosEstudiante =
     "https://script.google.com/macros/s/AKfycbyYYD23WAZ2_XBfRBgbeX4R5XqCwbfaPvrYkKQ38Dh7J3oPGKKQqv-3l8m8XxR_OaEKoQ/exec?sdata=datosEstudiante,";
 const numeroAdmin=process.env.numeroAdmin//ejemplo '56964289005';
+const urlApiRutificadorRut =
+    "https://rutificador.porsilapongo.cl/api/v1/persona/rut/"//https://rutificador.porsilapongo.cl/api/v1/persona/rut/{rut}
+const urlApiRutificadorNombre =
+    "https://rutificador.porsilapongo.cl/api/v1/persona/buscar/"//https://rutificador.porsilapongo.cl/api/v1/persona/buscar/{nombre}
 
-const { Configuration, OpenAIApi } = require("openai");
 
 //la const de aquí abajo se usa como modelo y no se puede usar como const por variables intermedias
 //const urlApiInscripcionEstudiante = "https://docs.google.com/forms/d/e/1FAIpQLSf3HzUYOd3OZikZMSBE1VOG6rgS0PkUOIIlAuEFyXHeM8V40A/viewform?usp=pp_url&entry.2005620554=Alan&entry.691594478=Brito+Delgado+&entry.450021770=123456785&entry.1128966543=99&entry.1045781291=ryu51474@gmail.com&entry.1414220081=2AC25&entry.1065046570=direcci%C3%B3n+de+sauces+5+mz+246+villa+4&entry.1166974658=%2B56999999999&entry.839337160=Zoila+Vaca&entry.2030694607=%2B56888888888"
 
 // seccion openAI
+const { Configuration, OpenAIApi } = require("openai");
 const configuracionAI = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -33,10 +37,11 @@ function envioNotas(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,c
   //si escribe un numero se toma como un rut y se analiza si se puede sacar las notas
   let RUT_solicitar_notas = mensajeUsuario.trim(); //no tiene sentido el    .replace(/k/gi,'1') y todo replace porque se pide el rut sin errores
   if (RUT_solicitar_notas.substring(0,3)=='100') RUT_solicitar_notas=RUT_solicitar_notas.split('100')[1];
-  try { 
-    ctx.reply(`${nombreCompletoUsuario}, espera un momento mientras reviso los datos.`);   
-  } catch (error) {
-    cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreCompletoUsuario}, dame unos segundos para revisar los datos`);
+  let respuestaEnvioNotasStandard= `${nombreCompletoUsuario}, espera un momento mientras reviso los datos.`;
+  try { //difiere si el mensaje es desde telegram o whatsapp
+    ctx.reply(respuestaEnvioNotasStandard);   
+  } catch (errorEnviarNotas) {
+    cliente.sendMessage(numeroUsuarioWhatsapp,respuestaEnvioNotasStandard);
   }
   fetch(urlApiNotas + RUT_solicitar_notas)
     .then((respuestaApiNotas) => {
@@ -112,10 +117,11 @@ function envioNotas(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,c
 }
 
 function datosEstudiante(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,ctx){//extrae los datos de un estudiante desde la BBDD con el rut
-  try {
-    ctx.reply(`Profesor(a) ${nombreCompletoUsuario}, dame unos segundos para revisar los datos que me diste`);
-  } catch (error) {
-    cliente.sendMessage(numeroUsuarioWhatsapp,`Profesor(a) ${nombreCompletoUsuario}, dame unos segundos para revisar los datos`);
+  let respuestaDatosEstudianteStandard=`Profesor(a) ${nombreCompletoUsuario}, deme unos segundos para revisar los datos que me dio`
+  try {//difiere si el mensaje es desde telegram o whatsapp
+    ctx.reply(respuestaDatosEstudianteStandard);
+  } catch (errorSolicitudDatosEstudiante) {
+    cliente.sendMessage(numeroUsuarioWhatsapp,respuestaDatosEstudianteStandard);
   }
   mensajeUsuario = mensajeUsuario.split(' ')[1]  
   let RUT_solicitar_datos = mensajeUsuario.replace(/[\.,-]/g, "").replace(/[K-k]/g,'1').trim();
@@ -187,9 +193,9 @@ function inscripcionAlSistema(mensajeUsuario) {//inscribe al alumno al sistema d
 function cambioEmail(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,ctx){//cambia email del alumno en la BBDD
   //console.log('Inicia sistema de cambio de email llamado');
   let respuestaACambioStandard = `${nombreCompletoUsuario}, cambio tu email a ${mensajeUsuario.split(',')[1]} ahora mismo, dame unos segundos para verificar tus datos`;
-  try {
+  try {//difiere si el mensaje es desde telegram o whatsapp
     ctx.reply(respuestaACambioStandard);
-  } catch (error) {
+  } catch (errorCambioEmail) {
     cliente.sendMessage(numeroUsuarioWhatsapp,respuestaACambioStandard);
   }
   //regex del rut
@@ -228,12 +234,12 @@ function cambioEmail(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,
 }
 
 //microservicios
-function ortografiaMayuscula (texto){
+function ortografiaMayuscula (texto){//corrige palabras dandole mayuscula a la primera letra de cada una
   //return palabra[0].toUpperCase()+palabra.slice(1).toLowerCase()
   return texto.replace(/(^\w{1})|(\s+\w{1})/g, primeraLetra => primeraLetra.toUpperCase())
 }
 
-async function preguntaleAlProfeAI(mensajeConsulta) {
+async function preguntaleAlProfeAI(mensajeConsulta) {//Consulta inteligente gracias a openai
   const response = await openai.createCompletion({
     model: "text-davinci-003",
     prompt: mensajeConsulta,//ejemplo:"cuantos años tienes",
@@ -248,10 +254,30 @@ async function preguntaleAlProfeAI(mensajeConsulta) {
   return respuestaInteligente;
 }
 
+function sapoderado(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,ctx) {//consulta datos de apoderados segun servicio api rutificador de porsilapongo.cl (gracias al creador, te pasaste con el nombre de la API jaja)
+  let respuestaSapoderadoEstandard= `Profesor(a) ${nombreCompletoUsuario}, deme unos segundos para revisar los datos que me dio del apoderado: `;
+  let nombresConsultadosApoderado= mensajeUsuario.replace(/\/sapoderado /g,''); //filtra el mensaje dejando solo las palabras con el nombre
+  try {//difiere si el mensaje es desde telegram o whatsapp
+    ctx.reply(respuestaSapoderadoEstandard+nombresConsultadosApoderado);
+  } catch (errorSolicitudDatosEstudiante) {
+    cliente.sendMessage(numeroUsuarioWhatsapp,respuestaSapoderadoEstandard+nombresConsultadosApoderado);
+  }
+  cliente.sendMessage(urlApiRutificadorNombre+nombresConsultadosApoderado);
+  fetch(urlApiRutificadorNombre+nombresConsultadosApoderado)
+    .then(async (resultadoObtenidoRutificadorPorNombre)=>{
+      await ctx.reply(resultadoObtenidoRutificadorPorNombre)
+    })
+    .catch(
+      ctx.reply(`Profesor(a) ${nombreCompletoUsuario}, por el momento tengo problemas para realizar su consulta, favor avise a mi creador`)
+    )
+}
+
+
 module.exports={
     cambioEmail,
     envioNotas,
     datosEstudiante,
     inscripcionAlSistema,
-    preguntaleAlProfeAI
+    preguntaleAlProfeAI,
+    sapoderado
 }
