@@ -13,15 +13,15 @@ const validadorEmail = require('email-validator');
 
 //modulo propios externos
 const {tokenTlgrm} = require('./config');
-const { cambioEmail,envioNotas,datosEstudiante,inscripcionAlSistema } = require('./API_servicios/APIservicios');
+const { cambioEmail,envioNotas,datosEstudiante,inscripcionAlSistema,preguntaleAlProfeAI } = require('./API_servicios/APIservicios');
 const BOT_TOKEN = tokenTlgrm();//token telegram
 
 //mensajes constantes de respuesta
 const menuOpciones=`Estas son las opciones: escribe en palabras tu solicitud segun lo que quieras hacer\n`+
 '1.- Escribe **opciones** para volver a ver este mensaje.\n'+
 '2.- Puedes **pedir notas** simplemente escribiéndolo.\n'+
-'3.- Pideme **cambiar email** para cambiar tu correo para recibir resultados de las pruebas.\n'+
-'4.- Dime **quiero inscribirme** si no te has incrito al sistema del profesor Daniel.';
+'3.- Pídeme **cambiar email** para cambiar tu correo para recibir resultados de las pruebas.\n'+
+'4.- Dime **quiero inscribirme** si no te has inscrito antes al sistema del profesor Daniel.';
 const finalMenuOpcionesTelegram='\nTambién puedes usar el listado de comandos con el botón MENU\n'+
 '👇 aquí'
 const chatFormBotGoogle = 'https://chat-forms.com/forms/1614949217593-mnk/?form'
@@ -179,16 +179,25 @@ bot.on('text', async (ctx)=>{
     if (validadorEmail.validate(nuevoEmailalumno)){
       cambioEmail(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null,ctx);
     } else {ctx.reply(`${nuevoEmailalumno} no es un email valido. Reintente según instrucciones`)}
-  } else {/**contesta cleverbot */
-    clever(mensajeUsuarioTelegram)
-      .then(async (respuestacleverBot) => {
+  } else {/**contesta open ai de estar disponible y en caso de emergencia cleverbot*/
+    try {
+      preguntaleAlProfeAI(mensajeUsuarioTelegram)
+      .then(async (resultadoRespuestaOpenAI)=>{
+        await
+        ctx.reply(resultadoRespuestaOpenAI);
+        //console.log(resultadoRespuestaOpenAI);
+      })
+    } catch (error) {
+      clever(mensajeUsuarioTelegram)
+        .then(async (respuestacleverBot) => {
         await //console.log("respuesta cleverbot: " + respuestacleverBot);
         ctx.reply(respuestacleverBot);
-      })
-      .catch((errorCleverbot) => {
+        })
+        .catch((errorCleverbot) => {
         //console.log(errorCleverbot);
         ctx.reply(inicioMensajeErrorCleverBot+`${nombreUsuarioTelegram}`);
-      });
+        })
+    }
   }
 })
 
@@ -286,8 +295,15 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
       //console.log(`${nuevoEmailalumno} es un email valido`);
       cambioEmail(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp,numeroUsuarioWhatsapp,null);
     } else {cliente.sendMessage(numeroUsuarioWhatsapp,`${nuevoEmailalumno} no es un email valido. Reintente según instrucciones`)}
-  } else {/**contesta cleverbot */
-    clever(cuerpoMensajeWhatsapp)
+  } else {/**contesta open ai de estar disponible y en caso de emergencia cleverbot*/
+    try {
+      preguntaleAlProfeAI(cuerpoMensajeWhatsapp)
+    .then(async (resultadoRespuestaOpenAI)=>{
+      await
+      cliente.sendMessage(numeroUsuarioWhatsapp,resultadoRespuestaOpenAI.replace(/\n\n/g,''));
+    })
+    } catch (error) {
+      clever(cuerpoMensajeWhatsapp)
       .then(async (respuestacleverBot) => {
         await //console.log("respuesta cleverbot: " + respuestacleverBot);
         cliente.sendMessage(numeroUsuarioWhatsapp, respuestacleverBot);
@@ -295,7 +311,8 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
       .catch((errorCleverbot) => {
         //console.log(errorCleverbot);
         cliente.sendMessage(numeroUsuarioWhatsapp, inicioMensajeErrorCleverBot+`${nombreUsuarioWhatsapp}`);
-      });
+      })
+    }
   }
 });
 
