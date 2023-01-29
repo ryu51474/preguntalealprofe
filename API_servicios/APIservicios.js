@@ -1,4 +1,5 @@
 require('dotenv').config()
+const axios = require('axios')
 
 const urlApiNotas =
     "https://script.google.com/macros/s/AKfycbyYYD23WAZ2_XBfRBgbeX4R5XqCwbfaPvrYkKQ38Dh7J3oPGKKQqv-3l8m8XxR_OaEKoQ/exec?sdata=";
@@ -106,13 +107,12 @@ function envioNotas(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,c
         });
     })
     .catch((errorApiNotas) => {
-      cliente.sendMessage('')
       try {
         ctx.reply(`Tuve problemas con tu solicitud. por: ${errorApiNotas}. Intente de nuevo, si el problema persiste favor reenvie este mensaje a dcornejo@liceotecnicotalcahuano.cl`)
       } catch (error) {
         cliente.sendMessage(numeroAdmin,`Tuve problemas con la solicitud de notas de ${nombreCompletoUsuario} cuando pidio por el rut ${RUT_solicitar_notas} por: ${errorApiNotas}.`)
       }
-      console.log("error en la api de notas porque: " + errorApiNotas);
+      //console.log("error en la api de notas porque: " + errorApiNotas);
     });
 }
 
@@ -255,21 +255,33 @@ async function preguntaleAlProfeAI(mensajeConsulta) {//Consulta inteligente grac
 }
 
 function sapoderado(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,ctx) {//consulta datos de apoderados segun servicio api rutificador de porsilapongo.cl (gracias al creador, te pasaste con el nombre de la API jaja)
-  let respuestaSapoderadoEstandard= `Profesor(a) ${nombreCompletoUsuario}, deme unos segundos para revisar los datos que me dio del apoderado: `;
+  let respuestaSapoderadoEstandard= `Profesor(a) ${nombreCompletoUsuario}, deme unos segundos para revisar los nombres que me dio del apoderado: `;
   let nombresConsultadosApoderado= mensajeUsuario.replace(/\/sapoderado /g,''); //filtra el mensaje dejando solo las palabras con el nombre
+  let nombreParaDirUrlRutificadorNombre = nombresConsultadosApoderado.replace(' ','%20').trim();
   try {//difiere si el mensaje es desde telegram o whatsapp
-    ctx.reply(respuestaSapoderadoEstandard+nombresConsultadosApoderado);
+    ctx.reply(respuestaSapoderadoEstandard+ortografiaMayuscula(nombresConsultadosApoderado));
+    //ctx.reply(urlApiRutificadorNombre+nombreParaDirUrlRutificadorNombre);
   } catch (errorSolicitudDatosEstudiante) {
     cliente.sendMessage(numeroUsuarioWhatsapp,respuestaSapoderadoEstandard+nombresConsultadosApoderado);
+    //cliente.sendMessage(urlApiRutificadorNombre+nombreParaDirUrlRutificadorNombre)
   }
-  cliente.sendMessage(urlApiRutificadorNombre+nombresConsultadosApoderado);
-  fetch(urlApiRutificadorNombre+nombresConsultadosApoderado)
-    .then(async (resultadoObtenidoRutificadorPorNombre)=>{
-      await ctx.reply(resultadoObtenidoRutificadorPorNombre)
+  axios.get(urlApiRutificadorNombre+nombreParaDirUrlRutificadorNombre)
+    .then((respuestaurlRutificadorNombreConAxios)=>{
+      let datosUtiles=respuestaurlRutificadorNombreConAxios.data;
+      let respuestaApiRutificadorStandard ='Profesor(a), segun lo consultado tuve estos resultados:\n\n'
+      try {//diferencia entre usuario telegram y whatsapp
+        ctx.reply(respuestaApiRutificadorStandard)
+      } catch (error) {
+        cliente.sendMessage(numeroUsuarioWhatsapp,respuestaApiRutificadorStandard)
+      }
+      datosUtiles.forEach(element => {
+        try {
+          ctx.reply(JSON.stringify(element));
+        } catch (error) {
+          cliente.sendMessage(numeroUsuarioWhatsapp,JSON.stringify(element))
+        }
+      });
     })
-    .catch(
-      ctx.reply(`Profesor(a) ${nombreCompletoUsuario}, por el momento tengo problemas para realizar su consulta, favor avise a mi creador`)
-    )
 }
 
 

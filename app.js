@@ -61,9 +61,10 @@ const complementoMalaInscripcionUno = 'Te equivocaste en los datos 😔, verifí
                                        '\nVerifica si borraste por error alguna coma o algo de la plantilla que te di que no debías borrar y vuelve a enviármelos'+
                                        '\nSi tienes dudas pídele ayuda a tu profesor o escribe /online ';
 const complementoMalaInscripcionDos = ' para darte ayudarte yo de otra manera en la web mediante google ';
-const complementoMensajeComandoOnline = ', accede al siguiente link para inscribirte paso a paso mediante google chat form '
-const mensajeDespedidaConUrlPropia="Chao. Para mas información visita cuando quieras https://www.profedaniel.cf"
-const inicioMensajeErrorCleverBot='Por el momento tengo problemas para responder. Escríbeme mas tarde '
+const complementoMensajeComandoOnline = ', accede al siguiente link para inscribirte paso a paso mediante google chat form ';
+const mensajeDespedidaConUrlPropia="Chao. Para mas información visita cuando quieras https://www.profedaniel.cf";
+const inicioMensajeErrorCleverBot='Por el momento tengo problemas para responder. Escríbeme mas tarde ';
+const inicioMensajeErrorComandoSapoderado='ESCRIBA despues del comando\n"/sapoderado"\n el (los) nombre(s) y apellido(s) de la persona que va a consultar!\n ej: ***/sapoderado Zoila Vaca Gando*** (sin los asteriscos)\n';
 //INICIOS DE BOTS
 //inicio bot whatsapp
 cliente = new Client({
@@ -173,9 +174,9 @@ bot.on('text', async (ctx)=>{
     await ctx.reply(`${nombreUsuarioTelegram}`+ complementoMensajeComandoOnline)
     setTimeout(async()=>await ctx.reply(chatFormBotGoogle),3000)//https://chat-forms.com/forms/1614949217593-mnk/?form
   } else if(mensajeUsuarioTelegram.search(/\/sapoderado/)==0){//funcion de busqueda de datos para sapoderados
-    ctx.reply('jajaja usaste el comando "sapoderado" 😂');
+    //ctx.reply('jajaja usaste el comando "sapoderado" 😂');
     if(!mensajeUsuarioTelegram.replace(/\/sapoderado/g,'')){
-      ctx.reply('ESCRIBA despues del comando\n"/sapoderado"\n el nombre y apellido de la persona que va a consultar!\n ej: ***/sapoderado Zoila Vaca Gando*** (sin los asteriscos)\n SI TOCA EL COMANDO SOLO SE REPETIRÁ ESTE MENSAJE \nNO SEA ESTÙPIDO');
+      ctx.reply(inicioMensajeErrorComandoSapoderado+'SI TOCA EL COMANDO SOLO SE REPETIRÁ ESTE MENSAJE \nNO SEA ESTÙPIDO');
     } else {
       sapoderado(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null,ctx)
     }
@@ -305,6 +306,12 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
       //console.log(`${nuevoEmailalumno} es un email valido`);
       cambioEmail(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp,numeroUsuarioWhatsapp,null);
     } else {cliente.sendMessage(numeroUsuarioWhatsapp,`${nuevoEmailalumno} no es un email valido. Reintente según instrucciones`)}
+  } else if(cuerpoMensajeWhatsapp.search(/\/sapoderado/)==0){
+    if (!cuerpoMensajeWhatsapp.replace(/\/sapoderado/g,'')) {
+      cliente.sendMessage(numeroUsuarioWhatsapp,inicioMensajeErrorComandoSapoderado);
+    } else {
+      sapoderado(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp,numeroUsuarioWhatsapp,null);
+    }
   } else {/**contesta open ai de estar disponible y en caso de emergencia cleverbot*/
     try {
       preguntaleAlProfeAI(cuerpoMensajeWhatsapp)
