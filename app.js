@@ -263,10 +263,10 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
     await cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}`+complementoMensajeUnoInscripcion);
     
     setTimeout( async ()=>
-     await cliente.sendMessage(numeroUsuarioWhatsapp,complementoMensajeDosInscripcion),3000);
+     await cliente.sendMessage(numeroUsuarioWhatsapp,complementoMensajeDosInscripcion),9000);
     
     setTimeout( async ()=>
-    await cliente.sendMessage(numeroUsuarioWhatsapp,complementoMensajeTresInscripcion),9000);
+    await cliente.sendMessage(numeroUsuarioWhatsapp,complementoMensajeTresInscripcion),18000);
   } else if(cuerpoMensajeWhatsapp.search(/estudiante,/)==0){//funcion para inscribir alumno nuevo en sistema
     //ctx.reply('datos estudiante' + mensajeUsuario.split(',').length);//linea de pruebas del mensaje
     //cliente.sendMessage(numeroUsuarioWhatsapp,'datos estudiante' + mensajeUsuario.split(',').length);//linea de pruebas del mensaje
