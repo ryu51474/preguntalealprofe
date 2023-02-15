@@ -17,12 +17,12 @@ const { cambioEmail,envioNotas,datosEstudiante,inscripcionAlSistema,preguntaleAl
 const BOT_TOKEN = tokenTlgrm();//token telegram
 
 //mensajes constantes de respuesta
-const menuOpciones=`Estas son las opciones: escribe en palabras tu solicitud segun lo que quieras hacer\n`+
-'1.- Escribe **opciones** para volver a ver este mensaje.\n'+
-'2.- Puedes **pedir notas** simplemente escribiéndolo.\n'+
-'3.- Pídeme **cambiar email** para cambiar tu correo para recibir resultados de las pruebas.\n'+
-'4.- Dime **quiero inscribirme** si no te has inscrito antes al sistema del profesor Daniel.\n'+
-'Si quieres algo distinto a lo anterior, lo que quieras de cualquier tema, de tus tareas escolares, curiosidades, etc. , pídemelo directamente (como si fuera gogle)';
+const menuOpciones=`Elige o escribe según quieras. Escribe **opciones** para volver a ver este mensaje.\n`+
+'1.- Para **pedir notas** escribe 1\n'+
+'2.- Para **cambiar email** de resultados de las pruebas escribe 2.\n'+
+'3.- Para inscribirse **quiero inscribirme** o escribe 3 (SOLO si no te has inscrito antes)\n'+
+'4.- Si quieres algo distinto a lo anterior,pídemelo directamente (como si fuera google).\n'+
+'';
 const finalMenuOpcionesTelegram='\nTambién puedes usar el listado de comandos con el botón MENU\n'+
 '👇 aquí'
 const chatFormBotGoogle = 'https://chat-forms.com/forms/1614949217593-mnk/?form'
@@ -34,7 +34,7 @@ const complementoInstruccionesCambioEmail=', para cambiar tu email en el que rec
                                           '\n ej: 123456781,nuevocorreo@gmail.com';
 const complementoMensajeErrorDatosParaDocentes=', no me mandaste los datos despues del comando /datos. '+
                                                 '\nReintenta como se te indicó cuando escribiste /profesor ';
-const complementoMensajeUnoInscripcion=', para inscribirse al sistema del profesor debes REEMPLAZAR y ENVIAR los siguientes datos tal como se te indica. NO OLVIDES LAS REGLAS, como por ejemplo el uso correcto de las Mayusculas, no usar tildes, el rut como el ejemplo y NO BORRAR LA COMA al final de cada dato'+
+const complementoMensajeUnoInscripcion=', debes REEMPLAZAR y ENVIAR los siguientes datos tal como se te indica. NO BORRES MAS QUE LO NECESARIO'+
                                         '\nO TENDRAS QUE HACERLO DE NUEVO\n';
 const complementoMensajeDosInscripcion='***copia y cambia los datos por los tuyos***\n'+
                                        '***cuando termines me los envias***\n'+
@@ -62,7 +62,7 @@ const complementoMalaInscripcionUno = 'Te equivocaste en los datos 😔, verifí
                                        '\nSi tienes dudas pídele ayuda a tu profesor o escribe /online ';
 const complementoMalaInscripcionDos = ' para darte ayudarte yo de otra manera en la web mediante google ';
 const complementoMensajeComandoOnline = ', accede al siguiente link para inscribirte paso a paso mediante google chat form ';
-const mensajeDespedidaConUrlPropia="Chao. Para mas información visita cuando quieras https://www.profedaniel.cf";
+const mensajeDespedidaConUrlPropia="Chao. Para mas información visita cuando quieras https://www.profedaniel.cl";
 const inicioMensajeErrorCleverBot='Por el momento tengo problemas para responder. Escríbeme mas tarde ';
 const inicioMensajeErrorComandoSapoderado='ESCRIBA despues del comando\n"/sapoderado"\n el (los) nombre(s) y apellido(s) de la persona que va a consultar!\n ej: ***/sapoderado Zoila Vaca Gando*** (sin los asteriscos)\n';
 //INICIOS DE BOTS
@@ -118,13 +118,13 @@ bot.on('text', async (ctx)=>{
     await ctx.reply(`Si deseas saber que puedo hacer por ti puedes escribir **opciones** para saberlo`+
               `\nSi eres profesor sigue las instrucciones de acceso que te dieron`)
     //console.log(mensajeRespuestaSaludoAzar)
-  } else if (mensajeUsuarioTelegram.search(/nota/)>=0){//si en el mensaje existe la palabra nota da instrucciones para recibir notas
+  } else if (mensajeUsuarioTelegram.search(/nota/)>=0||mensajeUsuarioTelegram===1){//si en el mensaje existe la palabra nota da instrucciones para recibir notas
     ctx.reply(`${nombreUsuarioTelegram}`+complmentoInstruccionesRutNotasEstudiantes)
   } else if (!isNaN(mensajeUsuarioTelegram)&&mensajeUsuarioTelegram.length>=9){
       envioNotas(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null,ctx);
   } else if (mensajeUsuarioTelegram.normalize("NFD").replace(/[\u0300-\u036f]/g, "").search(/adios/) >= 0||mensajeUsuarioTelegram.search(/chao/) >= 0) {//despedida con mensaje final
     ctx.reply(mensajeDespedidaConUrlPropia);
-  } else if (mensajeUsuarioTelegram.search(/email/)>=0){//instrucciones de cambio de email en la base de datos
+  } else if (mensajeUsuarioTelegram.search(/email/)>=0||mensajeUsuarioTelegram===2){//instrucciones de cambio de email en la base de datos
     //console.log('inicio de envio de  INSTRUCCIONES DE  cambio de email');
     ctx.reply(`${nombreUsuarioTelegram}`+complementoInstruccionesCambioEmail);
   } else if (mensajeUsuarioTelegram.search(/opciones/)>=0){//opciones del bot y sus acciones
@@ -137,15 +137,15 @@ bot.on('text', async (ctx)=>{
       } else {
         datosEstudiante(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null,ctx);
       }
-  } else if (mensajeUsuarioTelegram.search(/inscribirme/)>=0){
+  } else if (mensajeUsuarioTelegram.search(/inscribirme/)>=0||mensajeUsuarioTelegram===3){
     
     await ctx.reply(`${nombreUsuarioTelegram}`+complementoMensajeUnoInscripcion);
     
     setTimeout( async ()=>
-     await ctx.reply(complementoMensajeDosInscripcion),3000);
+     await ctx.reply(complementoMensajeDosInscripcion),9000);
     
     setTimeout( async ()=>
-    await ctx.reply(complementoMensajeTresInscripcion),9000);
+    await ctx.reply(complementoMensajeTresInscripcion),18000);
   } else if(mensajeUsuarioTelegram.search(/estudiante,/)==0){//funcion para inscribir alumno nuevo en sistema
     //ctx.reply('datos estudiante' + mensajeUsuario.split(',').length);//linea de pruebas del mensaje
     let apellidosVerificar = mensajeUsuarioTelegram.split(',')[2].split(':')[1].trim();
@@ -224,7 +224,7 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
   //console.log(mensajeEntrante.to);
 
   
-  if (cuerpoMensajeWhatsapp.search(/hola/) >= 0) {//si el mensaje viene con la palabra hola responde un saludo al azar
+  if (cuerpoMensajeWhatsapp.search(/hola/)>=0) {//si el mensaje viene con la palabra hola responde un saludo al azar
     var ahora = new Date(); //PROCESO PENDIENTE: se ha subido aqui, sacado del primer if porque solo debe responder el bot si es muy tarde
     var arrayRespuestas = [
       `estas bien?, un gusto saludarte ${nombreUsuarioWhatsapp}`,
@@ -238,13 +238,13 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
     await cliente.sendMessage(numeroUsuarioWhatsapp, mensajeRespuestaSaludoAzar);
     await cliente.sendMessage(numeroUsuarioWhatsapp,`Si deseas saber que puedo hacer por ti puedes escribir **opciones** para saberlo.`+
                                       `\n Si eres profesor sigue las instrucciones de acceso que te dieron`)
-  } else if (cuerpoMensajeWhatsapp.search(/nota/) >= 0) {//si en el mensaje existe la palabra nota da instrucciones para recibir notas
+  } else if (cuerpoMensajeWhatsapp.search(/nota/)>=0||cuerpoMensajeWhatsapp===1) {//si en el mensaje existe la palabra nota da instrucciones para recibir notas
     cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}`+complmentoInstruccionesRutNotasEstudiantes);
   } else if (!isNaN(cuerpoMensajeWhatsapp)&&cuerpoMensajeWhatsapp.length>=9) {//envio de notas usando solo el rut
     envioNotas(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp,numeroUsuarioWhatsapp,null);
   } else if (cuerpoMensajeWhatsapp.normalize("NFD").replace(/[\u0300-\u036f]/g, "").search(/adios/) >= 0||cuerpoMensajeWhatsapp.search(/chao/) >= 0) {//despedida con mensaje final
     mensajeEntrante.reply(mensajeDespedidaConUrlPropia);
-  } else if (cuerpoMensajeWhatsapp.search(/email/)>=0){//instrucciones de cambio de email en la base de datos
+  } else if (cuerpoMensajeWhatsapp.search(/email/)>=0||cuerpoMensajeWhatsapp===2){//instrucciones de cambio de email en la base de datos
     //console.log('inicio de envio de  INSTRUCCIONES DE  cambio de email');
     cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}`+complementoInstruccionesCambioEmail)
   } else if (cuerpoMensajeWhatsapp.search(/opciones/)>=0){//opciones del bot y sus acciones
@@ -258,7 +258,7 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
       } else{      
         datosEstudiante(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp,numeroUsuarioWhatsapp,null);
       }
-  } else if (cuerpoMensajeWhatsapp.search(/inscribirme/)>=0){
+  } else if (cuerpoMensajeWhatsapp.search(/inscribirme/)>=0||cuerpoMensajeWhatsapp===3){
     
     await cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}`+complementoMensajeUnoInscripcion);
     
