@@ -238,13 +238,13 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
     await cliente.sendMessage(numeroUsuarioWhatsapp, mensajeRespuestaSaludoAzar);
     await cliente.sendMessage(numeroUsuarioWhatsapp,`Si deseas saber que puedo hacer por ti puedes escribir **opciones** para saberlo.`+
                                       `\n Si eres profesor sigue las instrucciones de acceso que te dieron`)
-  } else if (cuerpoMensajeWhatsapp.search(/nota/)>=0||cuerpoMensajeWhatsapp===1) {//si en el mensaje existe la palabra nota da instrucciones para recibir notas
+  } else if (cuerpoMensajeWhatsapp.search(/nota/)>=0||cuerpoMensajeWhatsapp.trim()=="1") {//si en el mensaje existe la palabra nota da instrucciones para recibir notas
     cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}`+complmentoInstruccionesRutNotasEstudiantes);
   } else if (!isNaN(cuerpoMensajeWhatsapp)&&cuerpoMensajeWhatsapp.length>=9) {//envio de notas usando solo el rut
     envioNotas(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp,numeroUsuarioWhatsapp,null);
   } else if (cuerpoMensajeWhatsapp.normalize("NFD").replace(/[\u0300-\u036f]/g, "").search(/adios/) >= 0||cuerpoMensajeWhatsapp.search(/chao/) >= 0) {//despedida con mensaje final
     mensajeEntrante.reply(mensajeDespedidaConUrlPropia);
-  } else if (cuerpoMensajeWhatsapp.search(/email/)>=0||cuerpoMensajeWhatsapp===2){//instrucciones de cambio de email en la base de datos
+  } else if (cuerpoMensajeWhatsapp.search(/email/)>=0||cuerpoMensajeWhatsapp.trim()=="2"){//instrucciones de cambio de email en la base de datos
     //console.log('inicio de envio de  INSTRUCCIONES DE  cambio de email');
     cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}`+complementoInstruccionesCambioEmail)
   } else if (cuerpoMensajeWhatsapp.search(/opciones/)>=0){//opciones del bot y sus acciones
@@ -258,7 +258,7 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
       } else{      
         datosEstudiante(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp,numeroUsuarioWhatsapp,null);
       }
-  } else if (cuerpoMensajeWhatsapp.search(/inscribirme/)>=0||cuerpoMensajeWhatsapp===3){
+  } else if (cuerpoMensajeWhatsapp.search(/inscribirme/)>=0||cuerpoMensajeWhatsapp.trim()=="3"){
     
     await cliente.sendMessage(numeroUsuarioWhatsapp,`${nombreUsuarioWhatsapp}`+complementoMensajeUnoInscripcion);
     
