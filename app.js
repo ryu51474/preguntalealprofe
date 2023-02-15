@@ -17,20 +17,20 @@ const { cambioEmail,envioNotas,datosEstudiante,inscripcionAlSistema,preguntaleAl
 const BOT_TOKEN = tokenTlgrm();//token telegram
 
 //mensajes constantes de respuesta
-const menuOpciones=`Elige o escribe según quieras. Escribe **opciones** para volver a ver este mensaje.\n`+
+const menuOpciones=`Elige o escribe según quieras:\n`+
 '1.- Para **pedir notas** escribe 1\n'+
 '2.- Para **cambiar email** de resultados de las pruebas escribe 2.\n'+
 '3.- Para inscribirse **quiero inscribirme** o escribe 3 (SOLO si no te has inscrito antes)\n'+
-'4.- Si quieres algo distinto a lo anterior,pídemelo directamente (como si fuera google).\n'+
-'';
+'4.- Si quieres algo distinto a lo anterior, pídemelo directamente (como si fuera google).\n'+
+'Escribe **opciones** para volver a ver este mensaje.';
 const finalMenuOpcionesTelegram='\nTambién puedes usar el listado de comandos con el botón MENU\n'+
 '👇 aquí'
 const chatFormBotGoogle = 'https://chat-forms.com/forms/1614949217593-mnk/?form'
-const complmentoInstruccionesRutNotasEstudiantes=',  si deseas saber notas debes de ahora ingresar solo tu rut, sin puntos ni guión, en caso de terminar en k reemplácelo con un 1, ej: el rut 12.345.678-k se escribe 123456781. si eres extranjero,  SE INCLUYE EL 100. SI NO LO HACE CORRECTAMENTE SU PETICION SERA ANULADA E IGNORADA (Puede que se responda con cualquier cosa absurda)';
+const complmentoInstruccionesRutNotasEstudiantes=', ingresa solo tu rut, sin puntos ni guión, si termina en k reemplácelo con 1, ej: 12.345.678-k se escribe 123456781. \n\nSI NO LO HACE CORRECTAMENTE SU PETICION SERA ANULADA E IGNORADA (Puede que se responda con cualquier cosa absurda)';
 const complementoInstruccionesRutDatosEstudianteParaDocentes=', para solicitar los datos de algun estudiante debes usar el comando /datos, un espacio y el rut del estudiante sin puntos ni guión En caso de terminar en k, reemplácelo por un 1 en esta forma exactamente por ejemplo:\n /datos 123456781 \n'+
                                                              'Si es rut extranjero NO incluya e 100\n\n'+
                                                              'Si no conoces el rut del estudiante me es difícil ayudarte, quizás te sirva buscar los datos del apoderado por sus nombres usando el comando /sapoderado (si, tal cual, sapo-derado) seguido de los nombres y apellidos que conozcas del apoderado, si son más, mejor. (ej: /sapoderado Alma Marcela Gozo Ricco)';
-const complementoInstruccionesCambioEmail=', para cambiar tu email en el que recibes las notas debes escribir ahora tu rut sin puntos ni guion seguido de una coma y el nuevo email. SIN ESPACIOS o su solicitud será rechazada. En caso que su rut termine en k reemplácelo por un 1. Si es extranjero no escriba el 100 '+
+const complementoInstruccionesCambioEmail=', debes escribir ahora tu rut sin puntos ni guion (Si termina en k reemplácelo por 1.) seguido de una coma y el nuevo email. Si es extranjero NO escriba el 100 '+
                                           '\n ej: 123456781,nuevocorreo@gmail.com';
 const complementoMensajeErrorDatosParaDocentes=', no me mandaste los datos despues del comando /datos. '+
                                                 '\nReintenta como se te indicó cuando escribiste /profesor ';
@@ -118,13 +118,13 @@ bot.on('text', async (ctx)=>{
     await ctx.reply(`Si deseas saber que puedo hacer por ti puedes escribir **opciones** para saberlo`+
               `\nSi eres profesor sigue las instrucciones de acceso que te dieron`)
     //console.log(mensajeRespuestaSaludoAzar)
-  } else if (mensajeUsuarioTelegram.search(/nota/)>=0||mensajeUsuarioTelegram===1){//si en el mensaje existe la palabra nota da instrucciones para recibir notas
+  } else if (mensajeUsuarioTelegram.search(/nota/)>=0||mensajeUsuarioTelegram.trim()=="1"){//si en el mensaje existe la palabra nota da instrucciones para recibir notas
     ctx.reply(`${nombreUsuarioTelegram}`+complmentoInstruccionesRutNotasEstudiantes)
   } else if (!isNaN(mensajeUsuarioTelegram)&&mensajeUsuarioTelegram.length>=9){
       envioNotas(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null,ctx);
   } else if (mensajeUsuarioTelegram.normalize("NFD").replace(/[\u0300-\u036f]/g, "").search(/adios/) >= 0||mensajeUsuarioTelegram.search(/chao/) >= 0) {//despedida con mensaje final
     ctx.reply(mensajeDespedidaConUrlPropia);
-  } else if (mensajeUsuarioTelegram.search(/email/)>=0||mensajeUsuarioTelegram===2){//instrucciones de cambio de email en la base de datos
+  } else if (mensajeUsuarioTelegram.search(/email/)>=0||mensajeUsuarioTelegram.trim()=="2"){//instrucciones de cambio de email en la base de datos
     //console.log('inicio de envio de  INSTRUCCIONES DE  cambio de email');
     ctx.reply(`${nombreUsuarioTelegram}`+complementoInstruccionesCambioEmail);
   } else if (mensajeUsuarioTelegram.search(/opciones/)>=0){//opciones del bot y sus acciones
@@ -137,7 +137,7 @@ bot.on('text', async (ctx)=>{
       } else {
         datosEstudiante(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null,ctx);
       }
-  } else if (mensajeUsuarioTelegram.search(/inscribirme/)>=0||mensajeUsuarioTelegram===3){
+  } else if (mensajeUsuarioTelegram.search(/inscribirme/)>=0||mensajeUsuarioTelegram.trim()=="3"){
     
     await ctx.reply(`${nombreUsuarioTelegram}`+complementoMensajeUnoInscripcion);
     
