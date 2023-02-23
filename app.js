@@ -27,14 +27,15 @@ const finalMenuOpcionesTelegram='\nTambién puedes usar el listado de comandos c
 '👇 aquí'
 const chatFormBotGoogle = 'https://chat-forms.com/forms/1614949217593-mnk/?form'
 const complmentoInstruccionesRutNotasEstudiantes=', ingresa solo tu rut, sin puntos ni guión, si termina en k reemplácelo con 1, ej: 12.345.678-k se escribe 123456781. \n\nSI NO LO HACE CORRECTAMENTE SU PETICION SERA ANULADA E IGNORADA (Puede que se responda con cualquier cosa absurda)';
-const complementoInstruccionesRutDatosEstudianteParaDocentes=', para solicitar los datos de algun estudiante debes usar el comando /datos, un espacio y el rut del estudiante sin puntos ni guión En caso de terminar en k, reemplácelo por un 1 en esta forma exactamente por ejemplo:\n /datos 123456781 \n'+
-                                                             'Si es rut extranjero NO incluya e 100\n\n'+
-                                                             'Si no conoces el rut del estudiante me es difícil ayudarte, quizás te sirva buscar los datos del apoderado por sus nombres usando el comando /sapoderado (si, tal cual, sapo-derado) seguido de los nombres y apellidos que conozcas del apoderado, si son más, mejor. (ej: /sapoderado Alma Marcela Gozo Ricco)';
+const complementoInstruccionesRutDatosEstudianteParaDocentes1=', para solicitar los datos de algun estudiante debes usar el comando \n/datos, un espacio y el rut del estudiante sin puntos ni guión En caso de terminar en k, reemplácelo por un 1 en esta forma exactamente por ejemplo:\n\n/datos 123456781 \n'+
+                                                             '\nSi es rut extranjero NO incluya e 100'
+const complementoInstruccionesRutDatosEstudianteParaDocentes2='Si no conoces el rut del estudiante me es difícil ayudarte, quizás te sirva buscar los datos del apoderado por sus nombres usando el comando /sapoderado (si, tal cual, sapo-derado) seguido de los nombres y apellidos que conozcas del apoderado, si son más, mejor. (ej: /sapoderado Alma Marcela Gozo Ricco)';
 const complementoInstruccionesCambioEmail=', debes escribir ahora tu rut sin puntos ni guion (Si termina en k reemplácelo por 1.) seguido de una coma y el nuevo email. Si es extranjero NO escriba el 100 '+
                                           '\n ej: 123456781,nuevocorreo@gmail.com';
 const complementoMensajeErrorDatosParaDocentes=', no me mandaste los datos despues del comando /datos. '+
-                                                '\nReintenta como se te indicó cuando escribiste /profesor ';
-const complementoMensajeUnoInscripcion=', debes REEMPLAZAR y ENVIAR los siguientes datos tal como se te indica. NO BORRES MAS QUE LO NECESARIO'+
+                                                '\nReintenta como se te indicó cuando escribiste /docente ';
+const complementoMensajeUnoInscripcion=', debes REEMPLAZAR y ENVIAR los siguientes datos tal como se te indica. '+
+                                        '\nNO BORRES MAS QUE LO NECESARIO'+
                                         '\nO TENDRAS QUE HACERLO DE NUEVO\n';
 const complementoMensajeDosInscripcion='***copia y cambia los datos por los tuyos***\n'+
                                        '***cuando termines me los envias***\n'+
@@ -130,7 +131,10 @@ bot.on('text', async (ctx)=>{
   } else if (mensajeUsuarioTelegram.search(/opciones/)>=0){//opciones del bot y sus acciones
     ctx.reply(ctx.from.first_name+'\n'+menuOpciones+finalMenuOpcionesTelegram)
   } else if(mensajeUsuarioTelegram.search(/\/docente/)==0){//instrucciones especificas para profesor
-    ctx.reply(`Profesor(a) ${nombreUsuarioTelegram}`+complementoInstruccionesRutDatosEstudianteParaDocentes);
+    ctx.reply(`Profesor(a) ${nombreUsuarioTelegram}`+complementoInstruccionesRutDatosEstudianteParaDocentes1);
+    setTimeout(async ()=>{
+      await ctx.reply(complementoInstruccionesRutDatosEstudianteParaDocentes2);
+    },18000)
   } else if(mensajeUsuarioTelegram.search(/\/datos/)==0){
       if (mensajeUsuarioTelegram.trim()==='/datos') {
         ctx.reply(`Profesor(a) ${nombreCompletoUsuarioTelegram}`+complementoMensajeErrorDatosParaDocentes+'(👈🏾 tócalo si quieres recordar las instrucciones)')
@@ -250,7 +254,10 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
   } else if (cuerpoMensajeWhatsapp.search(/opciones/)>=0){//opciones del bot y sus acciones
     cliente.sendMessage(numeroUsuarioWhatsapp,nombreUsuarioWhatsapp+'\n'+menuOpciones)
   } else if(cuerpoMensajeWhatsapp.search(/\/docente/)>=0){
-    cliente.sendMessage(numeroUsuarioWhatsapp,`Profesor(a) ${nombreUsuarioWhatsapp}`+complementoInstruccionesRutDatosEstudianteParaDocentes)
+    cliente.sendMessage(numeroUsuarioWhatsapp,`Profesor(a) ${nombreUsuarioWhatsapp}`+complementoInstruccionesRutDatosEstudianteParaDocentes1)
+    setTimeout(async()=>{
+      await cliente.sendMessage(numeroUsuarioWhatsapp,complementoInstruccionesRutDatosEstudianteParaDocentes2);
+    },18000)
   } else if(cuerpoMensajeWhatsapp.search(/\/datos/)>=0){
       if (cuerpoMensajeWhatsapp.trim()==='/datos'){
         cliente.sendMessage(numeroUsuarioWhatsapp,
