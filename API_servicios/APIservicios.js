@@ -2,11 +2,11 @@ require('dotenv').config()
 const axios = require('axios')
 
 const urlApiNotas =
-    "https://script.google.com/macros/s/AKfycbzvvCQYH_BFAs2fUbaVI72KHXpQHJh197gKCzy7mok757uSFh3Ul2LU-a4oB7nxIEHmiQ/exec?sdata=";
+    "https://script.google.com/macros/s/AKfycbyYk_9G0TwF5Oa8ZeKo8FBIeJKyBBB7HWPFowPNdnUTQLfTQMtZg9tXVkZPE3DMI42Oig/exec?sdata=";
 const urlApiNuevoEmail =
-    "https://script.google.com/macros/s/AKfycbzvvCQYH_BFAs2fUbaVI72KHXpQHJh197gKCzy7mok757uSFh3Ul2LU-a4oB7nxIEHmiQ/exec?sdata=";
+    "https://script.google.com/macros/s/AKfycbyYk_9G0TwF5Oa8ZeKo8FBIeJKyBBB7HWPFowPNdnUTQLfTQMtZg9tXVkZPE3DMI42Oig/exec?sdata=";
 const urlApiDatosEstudiante =
-    "https://script.google.com/macros/s/AKfycbzvvCQYH_BFAs2fUbaVI72KHXpQHJh197gKCzy7mok757uSFh3Ul2LU-a4oB7nxIEHmiQ/exec?sdata=datosEstudiante,";
+    "https://script.google.com/macros/s/AKfycbyYk_9G0TwF5Oa8ZeKo8FBIeJKyBBB7HWPFowPNdnUTQLfTQMtZg9tXVkZPE3DMI42Oig/exec?sdata=datosEstudiante,";
 const numeroAdmin=process.env.numeroAdmin//ejemplo '56964289005';
 const urlApiRutificadorRut =
     "https://rutificador.porsilapongo.cl/api/v1/persona/rut/"//https://rutificador.porsilapongo.cl/api/v1/persona/rut/{rut}
