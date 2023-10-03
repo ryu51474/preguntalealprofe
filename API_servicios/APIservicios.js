@@ -201,7 +201,7 @@ function cambioEmail(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,
   //regex del rut
   let rutconEmail = mensajeUsuario.split(',')
   let RUT_paraCambioEmail = rutconEmail[0].replace(/[\.,-]/g, '').replace(/[K-k]/g,'1').replace(/\s+/g,'').trim();
-  let correo_paraCambioEmail = rutconEmail.replace(/\s+/g,'').trim();
+  let correo_paraCambioEmail = rutconEmail[1].replace(/\s+/g,'').trim();
   let comandoListoparaAPI = RUT_paraCambioEmail+','+correo_paraCambioEmail;
   //if(cuerpoMensaje.split(',')[0].substring(0,3)=='100') cuerpoMensaje = cuerpoMensaje.split('100')[1];
   fetch(urlApiNuevoEmail+comandoListoparaAPI)
