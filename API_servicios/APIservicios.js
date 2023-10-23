@@ -1,13 +1,15 @@
 require('dotenv').config()
 const axios = require('axios')
+const {implementacionApiGoogle,numeroAdmin} = require('./config')
 
 const urlApiNotas =
-    "https://script.google.com/macros/s/AKfycbyYk_9G0TwF5Oa8ZeKo8FBIeJKyBBB7HWPFowPNdnUTQLfTQMtZg9tXVkZPE3DMI42Oig/exec?sdata=";
+    "https://script.google.com/macros/s/"+implementacionApiGoogle+"/exec?sdata=";
 const urlApiNuevoEmail =
-    "https://script.google.com/macros/s/AKfycbyYk_9G0TwF5Oa8ZeKo8FBIeJKyBBB7HWPFowPNdnUTQLfTQMtZg9tXVkZPE3DMI42Oig/exec?sdata=";
+    "https://script.google.com/macros/s/"+implementacionApiGoogle+"/exec?sdata=";
 const urlApiDatosEstudiante =
-    "https://script.google.com/macros/s/AKfycbyYk_9G0TwF5Oa8ZeKo8FBIeJKyBBB7HWPFowPNdnUTQLfTQMtZg9tXVkZPE3DMI42Oig/exec?sdata=datosEstudiante,";
-const numeroAdmin=process.env.numeroAdmin//ejemplo '56964289005';
+    "https://script.google.com/macros/s/"+implementacionApiGoogle+"/exec?sdata=datosEstudiante,";
+const urlApiDatosEstudianteCurso = 
+    "https://script.google.com/macros/s/"+implementacionApiGoogle+"/exec?sdata=datosEstudianteCurso,"
 const urlApiRutificadorRut =
     "https://rutificador.porsilapongo.cl/api/v1/persona/rut/"//https://rutificador.porsilapongo.cl/api/v1/persona/rut/{rut}
 const urlApiRutificadorNombre =
@@ -171,6 +173,62 @@ function datosEstudiante(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhats
     })
 }
 
+function datosEstudianteCurso(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,ctx){//extrae los datos de un estudiante desde la BBDD con el rut
+  let respuestaDatosEstudianteStandard=`Profesor(a) ${nombreCompletoUsuario}, deme unos segundos para revisar los datos del mensaje a difundir`
+  try {//difiere si el mensaje es desde telegram o whatsapp
+    ctx.reply(respuestaDatosEstudianteStandard);
+  } catch (errorSolicitudDatosEstudiante) {
+    cliente.sendMessage(numeroUsuarioWhatsapp,respuestaDatosEstudianteStandard);
+  }
+  cursoAdifundirMensaje = mensajeUsuario.split(' ')[0];
+  mensajeUsuario = mensajeUsuario.split(' ')[1];  
+  //let RUT_solicitar_datos = mensajeUsuario.replace(/[\.,-]/g, "").replace(/[K-k]/g,'1').trim(); //no se solicita rut
+  fetch(urlApiDatosEstudianteCurso+cursoAdifundirMensaje)
+    .then((direccionRespuestaApiDatosEstudianteCurso)=>{
+        return direccionRespuestaApiDatosEstudianteCurso;
+    })
+    .then((direccionRespuestaApiDatosEstudianteCurso)=>{
+      fetch(direccionRespuestaApiDatosEstudiante.url)
+        .then((respuestaDireccionApiDatosEstudianteCurso)=>{
+          return respuestaDireccionApiDatosEstudianteCurso.text();
+        })
+        .then((respuestaDireccionApiDatosEstudianteCurso)=>{
+          //recibo el string
+          if(
+            respuestaDireccionApiDatosEstudianteCurso!=="Curso no existe, reintente" //corregir mensaje de error ******
+          ){
+            //console.log(respuestaDireccionApiDatosEstudiante);
+            setTimeout(async ()=>{
+              try {
+                await ctx.reply(respuestaDireccionApiDatosEstudianteCurso);
+              } catch (error) {
+                await cliente.sendMessage(numeroUsuarioWhatsapp,respuestaDireccionApiDatosEstudianteCurso);
+              }
+            },5000)
+          } else {
+            try {
+              ctx.reply(
+                "Curso no existe, verifique los datos y reintente. Si el problema persiste escriba a dcornejo@liceotecnicotalcahuano.cl indicando su rut, nombre y curso"
+              );
+            } catch (error) {
+              cliente.sendMessage(
+                numeroUsuarioWhatsapp,
+                "Curso no existe, verifique los datos y reintente. Si el problema persiste escriba a dcornejo@liceotecnicotalcahuano.cl indicando su rut, nombre y curso"
+              );
+            }
+          }
+        })
+        .catch((errorRespuestaDireccionApiDatosEstudiante)=>{
+          cliente.sendMessage(numeroAdmin,`Error respuesta direccion api datos estudiante en la solicitud de datos de ${nombreCompletoUsuario} cuando pidio los datos del estudiante ${RUT_solicitar_datos} por : ${errorRespuestaDireccionApiDatosEstudiante}`)
+          console.log(errorRespuestaDireccionApiDatosEstudiante)
+        });
+    })
+    .catch((errorUrlApiDatosEstudiante)=>{
+      cliente.sendMessage(numeroAdmin,`Error en la url Api Datos Estudiante cuando pidio ${nombreCompletoUsuario} por el rut ${RUT_solicitar_datos} por: ${errorUrlApiDatosEstudiante}`)
+      console.log(`Error en urlApiDatosEstudiante por: ${errorUrlApiDatosEstudiante}`);
+    })
+}
+
 function inscripcionAlSistema(mensajeUsuario) {//inscribe al alumno al sistema de la BBDD
   //se extraen los datos de la plantilla
   let datos_inscripcion=mensajeUsuario.split(',');
@@ -201,7 +259,7 @@ function cambioEmail(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,
   //regex del rut
   let rutconEmail = mensajeUsuario.split(',')
   let RUT_paraCambioEmail = rutconEmail[0].replace(/[\.,-]/g, '').replace(/[K-k]/g,'1').replace(/\s+/g,'').trim();
-  let correo_paraCambioEmail = rutconEmail[1].replace(/\s+/g,'').trim();
+  let correo_paraCambioEmail = rutconEmail.replace(/\s+/g,'').trim();
   let comandoListoparaAPI = RUT_paraCambioEmail+','+correo_paraCambioEmail;
   //if(cuerpoMensaje.split(',')[0].substring(0,3)=='100') cuerpoMensaje = cuerpoMensaje.split('100')[1];
   fetch(urlApiNuevoEmail+comandoListoparaAPI)
