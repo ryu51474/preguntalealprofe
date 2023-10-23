@@ -347,6 +347,7 @@ module.exports={
     cambioEmail,
     envioNotas,
     datosEstudiante,
+    datosEstudianteCurso,
     inscripcionAlSistema,
     preguntaleAlProfeAI,
     sapoderado
