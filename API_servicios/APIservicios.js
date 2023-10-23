@@ -204,13 +204,14 @@ function datosEstudianteCurso(nombreCompletoUsuario,mensajeUsuario,numeroUsuario
             for (let d = 0; d < datosCurso.length; d += 6){
               datosPorEstudiantesDelCurso.push(datosCurso.slice(d, d + 6)); //me cuesta entender este codigo porque me interrumpen mucho mis alumnos
             }///******organizar que hacer con los datos************
-            setTimeout(async ()=>{
+            console.log(datosPorEstudiantesDelCurso);
+            /*setTimeout(async ()=>{
               try {
                 await ctx.reply(respuestaDireccionApiDatosEstudianteCurso);
               } catch (error) {
                 await cliente.sendMessage(numeroUsuarioWhatsapp,respuestaDireccionApiDatosEstudianteCurso);
               }
-            },5000)
+            },5000)*/
           } else {
             try {
               ctx.reply(
