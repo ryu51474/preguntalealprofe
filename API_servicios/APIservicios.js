@@ -195,9 +195,15 @@ function datosEstudianteCurso(nombreCompletoUsuario,mensajeUsuario,numeroUsuario
         .then((respuestaDireccionApiDatosEstudianteCurso)=>{
           //recibo el string
           if(
-            respuestaDireccionApiDatosEstudianteCurso!=="Curso no existe, reintente" //corregir mensaje de error ******
+            respuestaDireccionApiDatosEstudianteCurso!=="Curso no existe, reintente"
           ){
             //console.log(respuestaDireccionApiDatosEstudiante);
+            var datosPorEstudiantesDelCurso=[];
+            let datosCurso = respuestaDireccionApiDatosEstudianteCurso.split(',').map(e=>e.trim());
+            //organizo los renglones de los datos de cada estudiante recibido
+            for (let d = 0; d < datosCurso.length; d += 6){
+              datosPorEstudiantesDelCurso.push(datosCurso.slice(d, d + 6)); //me cuesta entender este codigo porque me interrumpen mucho mis alumnos
+            }///******organizar que hacer con los datos************
             setTimeout(async ()=>{
               try {
                 await ctx.reply(respuestaDireccionApiDatosEstudianteCurso);
