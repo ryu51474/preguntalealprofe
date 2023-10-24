@@ -201,8 +201,16 @@ bot.on('text', async (ctx)=>{
     if (mensajeUsuarioTelegram.trim()==='/wsp') {
       ctx.reply(`Profesor(a) ${nombreCompletoUsuarioTelegram}`+complementoMensajeErrorDatosParaDocentesWSP+'(👈🏾 tócalo si quieres recordar las instrucciones)')
     } else {
-      let datosPorEstudiantesDelCurso = datosEstudianteCurso(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null,ctx);//******pendiente que hacer con el comando********
-      ctx.reply(datosPorEstudiantesDelCurso);
+      ctx.reply(mensajeUsuarioTelegram);
+      let datosPorEstudiantesDelCurso = await datosEstudianteCurso(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram.split('\/wsp')[1].trim(),null,ctx);//******pendiente que hacer con el comando********
+      setTimeout(async ()=>{
+        try {
+          await ctx.reply(datosPorEstudiantesDelCurso);
+        } catch (error) {
+          await cliente.sendMessage(numeroUsuarioWhatsapp,datosPorEstudiantesDelCurso);
+        }
+      },15000)
+      
     }
   }else {/**contesta open ai de estar disponible y en caso de emergencia cleverbot*/
     try {
@@ -333,9 +341,10 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
     if (cuerpoMensajeWhatsapp.trim()==='/wsp'){
       cliente.sendMessage(numeroUsuarioWhatsapp,
         `Profesor(a) ${nombreUsuarioWhatsapp}`+complementoMensajeErrorDatosParaDocentesWSP+'(👈🏾 vuelve a escribirlo así si quieres recordar las instrucciones)');
-    } else{      
-      let datosPorEstudiantesDelCurso = datosEstudianteCurso(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp,numeroUsuarioWhatsapp,null);
-      cliente.sendMessage(numeroAdmin,datosPorEstudiantesDelCurso);
+    } else { 
+      cliente.sendMessage(numeroAdmin,'aqui estoy');    
+      let datosPorEstudiantesDelCurso = await datosEstudianteCurso(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp,numeroUsuarioWhatsapp,null);
+      await cliente.sendMessage(numeroAdmin,datosPorEstudiantesDelCurso);
     }
   } else {/**contesta open ai de estar disponible y en caso de emergencia cleverbot*/
     try {

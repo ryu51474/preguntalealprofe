@@ -199,15 +199,20 @@ function datosEstudianteCurso(nombreCompletoUsuario,mensajeUsuario,numeroUsuario
           if(
             respuestaDireccionApiDatosEstudianteCurso!=="Curso no existe, reintente"
           ){
-            //console.log(respuestaDireccionApiDatosEstudiante);
-            var datosPorEstudiantesDelCurso=[];
-            let datosCurso = respuestaDireccionApiDatosEstudianteCurso.split(',').map(e=>e.trim());
-            //organizo los renglones de los datos de cada estudiante recibido
-            for (let d = 0; d < datosCurso.length; d += 6){
+            try {
+              console.log(respuestaDireccionApiDatosEstudianteCurso);
+              var datosPorEstudiantesDelCurso=[];
+              let datosCurso =respuestaDireccionApiDatosEstudianteCurso.split(',').map(e=>e.trim());
+              //organizo los renglones de los datos de cada estudiante recibido
+              for (let d = 0; d < datosCurso.length; d += 6){
               datosPorEstudiantesDelCurso.push(datosCurso.slice(d, d + 6)); //me cuesta entender este codigo porque me interrumpen mucho mis alumnos
-            }///******organizar que hacer con los datos************
-            console.log(datosPorEstudiantesDelCurso);
-            return datosPorEstudiantesDelCurso;
+              }///******organizar que hacer con los datos************
+              console.log(datosPorEstudiantesDelCurso);
+              return datosPorEstudiantesDelCurso;
+            } catch (error) {
+              cliente.sendMessage(numeroAdmin,error);
+            }
+            
             /*setTimeout(async ()=>{
               try {
                 await ctx.reply(respuestaDireccionApiDatosEstudianteCurso);
@@ -234,7 +239,7 @@ function datosEstudianteCurso(nombreCompletoUsuario,mensajeUsuario,numeroUsuario
         });
     })
     .catch((errorUrlApiDatosEstudiante)=>{
-      cliente.sendMessage(numeroAdmin,`Error en la url Api Datos Estudiante cuando pidio ${nombreCompletoUsuario} por el rut ${RUT_solicitar_datos} por: ${errorUrlApiDatosEstudiante}`)
+      cliente.sendMessage(numeroAdmin,`Error datos curso por: ${errorUrlApiDatosEstudiante}`)
       console.log(`Error en urlApiDatosEstudiante por: ${errorUrlApiDatosEstudiante}`);
     })
 }
