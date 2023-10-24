@@ -1,21 +1,22 @@
 require('dotenv').config()
 const axios = require('axios')
 const numeroAdmin = process.env.numeroAdmin;
-const codigoImplementecion = process.env.implementacionApiGoogle
+const codigoImplementacion = process.env.implementacionApiGoogle
 
 const urlApiNotas =
-    "https://script.google.com/macros/s/"+codigoImplementecion+"/exec?sdata=";
+    "https://script.google.com/macros/s/"+codigoImplementacion+"/exec?sdata=";
 const urlApiNuevoEmail =
-    "https://script.google.com/macros/s/"+codigoImplementecion+"/exec?sdata=";
+    "https://script.google.com/macros/s/"+codigoImplementacion+"/exec?sdata=";
 const urlApiDatosEstudiante =
-    "https://script.google.com/macros/s/"+codigoImplementecion+"/exec?sdata=datosEstudiante,";
+    "https://script.google.com/macros/s/"+codigoImplementacion+"/exec?sdata=datosEstudiante,";
 const urlApiDatosEstudianteCurso = 
-    "https://script.google.com/macros/s/"+codigoImplementecion+"/exec?sdata=datosEstudianteCurso,"
+    "https://script.google.com/macros/s/"+codigoImplementacion+"/exec?sdata=datosEstudianteCurso,"
+/* suspendido por falla de servicio
 const urlApiRutificadorRut =
     "https://rutificador.porsilapongo.cl/api/v1/persona/rut/"//https://rutificador.porsilapongo.cl/api/v1/persona/rut/{rut}
 const urlApiRutificadorNombre =
     "https://rutificador.porsilapongo.cl/api/v1/persona/buscar/"//https://rutificador.porsilapongo.cl/api/v1/persona/buscar/{nombre}
-
+*/
 
 //la const de aquí abajo se usa como modelo y no se puede usar como const por variables intermedias
 //const urlApiInscripcionEstudiante = "https://docs.google.com/forms/d/e/1FAIpQLSf3HzUYOd3OZikZMSBE1VOG6rgS0PkUOIIlAuEFyXHeM8V40A/viewform?usp=pp_url&entry.2005620554=Alan&entry.691594478=Brito+Delgado+&entry.450021770=123456785&entry.1128966543=99&entry.1045781291=ryu51474@gmail.com&entry.1414220081=2AC25&entry.1065046570=direcci%C3%B3n+de+sauces+5+mz+246+villa+4&entry.1166974658=%2B56999999999&entry.839337160=Zoila+Vaca&entry.2030694607=%2B56888888888"
@@ -319,7 +320,7 @@ async function preguntaleAlProfeAI(mensajeConsulta) {//Consulta inteligente grac
   //console.log(respuestaInteligente);//despues de pruebas comentar esta linea
   return respuestaInteligente;
 }
-
+/* suspendida por falla de servicio
 function sapoderado(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,ctx) {//consulta datos de apoderados segun servicio api rutificador de porsilapongo.cl (gracias al creador, te pasaste con el nombre de la API jaja)
   let respuestaSapoderadoEstandard= `Profesor(a) ${nombreCompletoUsuario}, deme unos segundos para revisar los nombres que me dio del apoderado: `;
   let nombresConsultadosApoderado= mensajeUsuario.replace(/\/sapoderado /g,''); //filtra el mensaje dejando solo las palabras con el nombre
@@ -349,7 +350,7 @@ function sapoderado(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,c
       });
     })
 }
-
+*/
 
 module.exports={
     cambioEmail,
@@ -357,6 +358,6 @@ module.exports={
     datosEstudiante,
     datosEstudianteCurso,
     inscripcionAlSistema,
-    preguntaleAlProfeAI,
-    sapoderado
+    preguntaleAlProfeAI//,
+    //sapoderado //suspendida por falla de servicio
 }

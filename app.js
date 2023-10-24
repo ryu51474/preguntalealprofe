@@ -177,7 +177,7 @@ bot.on('text', async (ctx)=>{
   } else if (mensajeUsuarioTelegram.search(/\/online/)==0){
     await ctx.reply(`${nombreUsuarioTelegram}`+ complementoMensajeComandoOnline)
     setTimeout(async()=>await ctx.reply(chatFormBotGoogle),3000)//https://chat-forms.com/forms/1614949217593-mnk/?form
-  } else if(mensajeUsuarioTelegram.search(/\/sapoderado/)==0){//funcion de busqueda de datos para sapoderados
+  } /*else if(mensajeUsuarioTelegram.search(/\/sapoderado/)==0){//funcion de busqueda de datos para sapoderados
     //ctx.reply('jajaja usaste el comando "sapoderado" 😂');
     if(!mensajeUsuarioTelegram.replace(/\/sapoderado/g,'')){
       ctx.reply(inicioMensajeErrorComandoSapoderado+'SI TOCA EL COMANDO SOLO SE REPETIRÁ ESTE MENSAJE \nNO SEA ESTÙPIDO');
@@ -185,7 +185,7 @@ bot.on('text', async (ctx)=>{
       sapoderado(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null,ctx)
     }
     //sapoderado(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null,ctx);
-  } else if(mensajeUsuarioTelegram.search(/@/)>=0){
+  } */else if(mensajeUsuarioTelegram.search(/@/)>=0){
     //se analiza si esta correcto el mensaje
     let rutconEmail = mensajeUsuarioTelegram.split(',')
     //regex del rut deprecado por ser innecesario para este proceso aqui que no lo ocupo
@@ -313,13 +313,13 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
       //console.log(`${nuevoEmailalumno} es un email valido`);
       cambioEmail(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp,numeroUsuarioWhatsapp,null);
     } else {cliente.sendMessage(numeroUsuarioWhatsapp,`${nuevoEmailalumno} no es un email valido. Reintente según instrucciones`)}
-  } else if(cuerpoMensajeWhatsapp.search(/\/sapoderado/)==0){
+  } /*else if(cuerpoMensajeWhatsapp.search(/\/sapoderado/)==0){
     if (!cuerpoMensajeWhatsapp.replace(/\/sapoderado/g,'')) {
       cliente.sendMessage(numeroUsuarioWhatsapp,inicioMensajeErrorComandoSapoderado);
     } else {
       sapoderado(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp,numeroUsuarioWhatsapp,null);
     }
-  } else {/**contesta open ai de estar disponible y en caso de emergencia cleverbot*/
+  } */else {/**contesta open ai de estar disponible y en caso de emergencia cleverbot*/
     try {
       preguntaleAlProfeAI(cuerpoMensajeWhatsapp)
         .then(async (resultadoRespuestaOpenAI)=>{
