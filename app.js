@@ -13,7 +13,7 @@ const validadorEmail = require('email-validator');
 
 //modulo propios externos
 const {tokenTlgrm} = require('./config');
-const { cambioEmail,envioNotas,datosEstudiante,inscripcionAlSistema,preguntaleAlProfeAI,sapoderado } = require('./API_servicios/APIservicios');
+const { cambioEmail,envioNotas,datosEstudiante,inscripcionAlSistema,preguntaleAlProfeAI,sapoderado,datosEstudianteCurso } = require('./API_servicios/APIservicios');
 const BOT_TOKEN = tokenTlgrm();//token telegram
 
 //mensajes constantes de respuesta
@@ -33,6 +33,8 @@ const complementoInstruccionesRutDatosEstudianteParaDocentes2='Si no conoces el 
 const complementoInstruccionesCambioEmail=', debes escribir ahora tu rut sin puntos ni guion (Si termina en k reemplácelo por 1.) seguido de una coma y el nuevo email. Si es extranjero NO escriba el 100 '+
                                           '\n ej: 123456781,nuevocorreo@gmail.com';
 const complementoMensajeErrorDatosParaDocentes=', no me mandaste los datos despues del comando /datos. '+
+                                                '\nReintenta como se te indicó cuando escribiste /docente ';
+const complementoMensajeErrorDatosParaDocentesWSP=', no me mandaste los datos despues del comando /wsp. '+
                                                 '\nReintenta como se te indicó cuando escribiste /docente ';
 const complementoMensajeUnoInscripcion=', debes REEMPLAZAR y ENVIAR los siguientes datos tal como se te indica. '+
                                         '\nNO BORRES MAS QUE LO NECESARIO'+
@@ -194,7 +196,13 @@ bot.on('text', async (ctx)=>{
     if (validadorEmail.validate(nuevoEmailalumno)){
       cambioEmail(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null,ctx);
     } else {ctx.reply(`${nuevoEmailalumno} no es un email valido. Reintente según instrucciones`)}
-  } else {/**contesta open ai de estar disponible y en caso de emergencia cleverbot*/
+  } else if(mensajeUsuarioTelegram.search(/\/wsp/)==0){
+    if (mensajeUsuarioTelegram.trim()==='/wsp') {
+      ctx.reply(`Profesor(a) ${nombreCompletoUsuarioTelegram}`+complementoMensajeErrorDatosParaDocentesWSP+'(👈🏾 tócalo si quieres recordar las instrucciones)')
+    } else {
+      datosEstudianteCurso(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null,ctx);//******pendiente que hacer con el comando********
+    }
+  }else {/**contesta open ai de estar disponible y en caso de emergencia cleverbot*/
     try {
       preguntaleAlProfeAI(mensajeUsuarioTelegram)
         .then(async (resultadoRespuestaOpenAI)=>{

@@ -175,7 +175,7 @@ function datosEstudiante(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhats
     })
 }
 
-function datosEstudianteCurso(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,ctx){//extrae los datos de un estudiante desde la BBDD con el rut
+function datosEstudianteCurso(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,ctx){//retorna los datos de un curso desde la BBDD con el rut
   let respuestaDatosEstudianteStandard=`Profesor(a) ${nombreCompletoUsuario}, deme unos segundos para revisar los datos del mensaje a difundir`
   try {//difiere si el mensaje es desde telegram o whatsapp
     ctx.reply(respuestaDatosEstudianteStandard);
