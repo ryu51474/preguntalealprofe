@@ -1,15 +1,16 @@
 require('dotenv').config()
 const axios = require('axios')
-const {implementacionApiGoogle,numeroAdmin} = require('../config')
+const numeroAdmin = process.env.numeroAdmin;
+const codigoImplementecion = process.env.implementacionApiGoogle
 
 const urlApiNotas =
-    "https://script.google.com/macros/s/"+implementacionApiGoogle.toString()+"/exec?sdata=";
+    "https://script.google.com/macros/s/"+codigoImplementecion+"/exec?sdata=";
 const urlApiNuevoEmail =
-    "https://script.google.com/macros/s/"+implementacionApiGoogle.toString()+"/exec?sdata=";
+    "https://script.google.com/macros/s/"+codigoImplementecion+"/exec?sdata=";
 const urlApiDatosEstudiante =
-    "https://script.google.com/macros/s/"+implementacionApiGoogle.toString()+"/exec?sdata=datosEstudiante,";
+    "https://script.google.com/macros/s/"+codigoImplementecion+"/exec?sdata=datosEstudiante,";
 const urlApiDatosEstudianteCurso = 
-    "https://script.google.com/macros/s/"+implementacionApiGoogle.toString()+"/exec?sdata=datosEstudianteCurso,"
+    "https://script.google.com/macros/s/"+codigoImplementecion+"/exec?sdata=datosEstudianteCurso,"
 const urlApiRutificadorRut =
     "https://rutificador.porsilapongo.cl/api/v1/persona/rut/"//https://rutificador.porsilapongo.cl/api/v1/persona/rut/{rut}
 const urlApiRutificadorNombre =
