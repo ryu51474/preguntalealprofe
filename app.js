@@ -12,7 +12,7 @@ const validadorEmail = require('email-validator');
 //const moment = require('moment-timezone');
 
 //modulo propios externos
-const {tokenTlgrm} = require('./config');
+const {tokenTlgrm, numeroAdmin} = require('./config');
 const { cambioEmail,envioNotas,datosEstudiante,inscripcionAlSistema,preguntaleAlProfeAI,sapoderado,datosEstudianteCurso } = require('./API_servicios/APIservicios');
 const BOT_TOKEN = tokenTlgrm();//token telegram
 
@@ -28,7 +28,8 @@ const finalMenuOpcionesTelegram='\nTambién puedes usar el listado de comandos c
 const chatFormBotGoogle = 'https://chat-forms.com/forms/1614949217593-mnk/?form'
 const complmentoInstruccionesRutNotasEstudiantes=', ingresa solo tu rut, sin puntos ni guión, si termina en k reemplácelo con 1, ej: 12.345.678-k se escribe 123456781. \n\nSI NO LO HACE CORRECTAMENTE SU PETICION SERA ANULADA E IGNORADA (Puede que se responda con cualquier cosa absurda)';
 const complementoInstruccionesRutDatosEstudianteParaDocentes1=', para solicitar los datos de algun estudiante debes usar el comando \n/datos, un espacio y el rut del estudiante sin puntos ni guión En caso de terminar en k, reemplácelo por un 1 en esta forma exactamente por ejemplo:\n\n/datos 123456781 \n'+
-                                                             '\nSi es rut extranjero NO incluya e 100'
+                                                             '\nSi es rut extranjero NO incluya e 100'+
+                                                             '\nsi desea mandar un mensaje a todo el curso debe usar el comando /wsp junto al curso finalizando con C25 y el mensaje a difundir, por ejemplo:\n\n/wsp 2CC25 mensaje'
 const complementoInstruccionesRutDatosEstudianteParaDocentes2='Si no conoces el rut del estudiante me es difícil ayudarte, quizás te sirva buscar los datos del apoderado por sus nombres usando el comando /sapoderado (si, tal cual, sapo-derado) seguido de los nombres y apellidos que conozcas del apoderado, si son más, mejor. (ej: /sapoderado Alma Marcela Gozo Ricco)';
 const complementoInstruccionesCambioEmail=', debes escribir ahora tu rut sin puntos ni guion (Si termina en k reemplácelo por 1.) seguido de una coma y el nuevo email. Si es extranjero NO escriba el 100 '+
                                           '\n ej: 123456781,nuevocorreo@gmail.com';
@@ -200,7 +201,8 @@ bot.on('text', async (ctx)=>{
     if (mensajeUsuarioTelegram.trim()==='/wsp') {
       ctx.reply(`Profesor(a) ${nombreCompletoUsuarioTelegram}`+complementoMensajeErrorDatosParaDocentesWSP+'(👈🏾 tócalo si quieres recordar las instrucciones)')
     } else {
-      datosEstudianteCurso(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null,ctx);//******pendiente que hacer con el comando********
+      let datosPorEstudiantesDelCurso = datosEstudianteCurso(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null,ctx);//******pendiente que hacer con el comando********
+      ctx.reply(datosPorEstudiantesDelCurso);
     }
   }else {/**contesta open ai de estar disponible y en caso de emergencia cleverbot*/
     try {
@@ -327,7 +329,15 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
     } else {
       sapoderado(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp,numeroUsuarioWhatsapp,null);
     }
-  } */else {/**contesta open ai de estar disponible y en caso de emergencia cleverbot*/
+  } */else if(cuerpoMensajeWhatsapp.search(/\/wsp/)>=0){
+    if (cuerpoMensajeWhatsapp.trim()==='/wsp'){
+      cliente.sendMessage(numeroUsuarioWhatsapp,
+        `Profesor(a) ${nombreUsuarioWhatsapp}`+complementoMensajeErrorDatosParaDocentesWSP+'(👈🏾 vuelve a escribirlo así si quieres recordar las instrucciones)');
+    } else{      
+      let datosPorEstudiantesDelCurso = datosEstudianteCurso(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp,numeroUsuarioWhatsapp,null);
+      cliente.sendMessage(numeroAdmin,datosPorEstudiantesDelCurso);
+    }
+  } else {/**contesta open ai de estar disponible y en caso de emergencia cleverbot*/
     try {
       preguntaleAlProfeAI(cuerpoMensajeWhatsapp)
         .then(async (resultadoRespuestaOpenAI)=>{

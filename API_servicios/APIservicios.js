@@ -207,6 +207,7 @@ function datosEstudianteCurso(nombreCompletoUsuario,mensajeUsuario,numeroUsuario
               datosPorEstudiantesDelCurso.push(datosCurso.slice(d, d + 6)); //me cuesta entender este codigo porque me interrumpen mucho mis alumnos
             }///******organizar que hacer con los datos************
             console.log(datosPorEstudiantesDelCurso);
+            return datosPorEstudiantesDelCurso;
             /*setTimeout(async ()=>{
               try {
                 await ctx.reply(respuestaDireccionApiDatosEstudianteCurso);
