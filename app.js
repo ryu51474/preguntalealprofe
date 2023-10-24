@@ -35,7 +35,7 @@ const complementoInstruccionesCambioEmail=', debes escribir ahora tu rut sin pun
                                           '\n ej: 123456781,nuevocorreo@gmail.com';
 const complementoMensajeErrorDatosParaDocentes=', no me mandaste los datos despues del comando /datos. '+
                                                 '\nReintenta como se te indicó cuando escribiste /docente ';
-const complementoMensajeErrorDatosParaDocentesWSP=', no me mandaste los datos despues del comando /wsp. '+
+const complementoMensajeErrorDatosParaDocentesWSP=', no me mandaste los datos despues del comando que eligió /wsp. '+
                                                 '\nReintenta como se te indicó cuando escribiste /docente ';
 const complementoMensajeUnoInscripcion=', debes REEMPLAZAR y ENVIAR los siguientes datos tal como se te indica. '+
                                         '\nNO BORRES MAS QUE LO NECESARIO'+
@@ -197,19 +197,26 @@ bot.on('text', async (ctx)=>{
     if (validadorEmail.validate(nuevoEmailalumno)){
       cambioEmail(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null,ctx);
     } else {ctx.reply(`${nuevoEmailalumno} no es un email valido. Reintente según instrucciones`)}
-  } else if(mensajeUsuarioTelegram.search(/\/wsp/)==0){
+  } else if(mensajeUsuarioTelegram.search(/\/wsp/)==0){//funcion para difundir un mensaje a un curso determinado
     if (mensajeUsuarioTelegram.trim()==='/wsp') {
       ctx.reply(`Profesor(a) ${nombreCompletoUsuarioTelegram}`+complementoMensajeErrorDatosParaDocentesWSP+'(👈🏾 tócalo si quieres recordar las instrucciones)')
     } else {
-      ctx.reply(mensajeUsuarioTelegram);
-      let datosPorEstudiantesDelCurso = await datosEstudianteCurso(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram.split('\/wsp')[1].trim(),null,ctx);//******pendiente que hacer con el comando********
-      setTimeout(async ()=>{
+      //let cursoMensaje = mensajeUsuarioTelegram.split('\/wsp ')[1].trim();
+      let respuestaComandoWSP = datosEstudianteCurso(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram.split('\/wsp ')[1].trim(),null,ctx)
+      setTimeout(async() => {
         try {
-          await ctx.reply(datosPorEstudiantesDelCurso);
-        } catch (error) {
-          await cliente.sendMessage(numeroUsuarioWhatsapp,datosPorEstudiantesDelCurso);
+          ctx.reply('respuestaFinComandoWSP')
+        } catch (errorDatosCurso) {
+          ctx.reply(errorDatosCurso)
         }
-      },15000)
+      }, 15000);
+      /*setTimeout(async ()=>{
+              try {
+                await ctx.reply(respuestaDireccionApiDatosEstudianteCurso);
+              } catch (error) {
+                await cliente.sendMessage(numeroUsuarioWhatsapp,respuestaDireccionApiDatosEstudianteCurso);
+              }
+            },5000)*/ 
       
     }
   }else {/**contesta open ai de estar disponible y en caso de emergencia cleverbot*/

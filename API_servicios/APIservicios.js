@@ -10,7 +10,7 @@ const urlApiNuevoEmail =
 const urlApiDatosEstudiante =
     "https://script.google.com/macros/s/"+codigoImplementacion+"/exec?sdata=datosEstudiante,";
 const urlApiDatosEstudianteCurso = 
-    "https://script.google.com/macros/s/"+codigoImplementacion+"/exec?sdata=datosEstudianteCurso,"
+    "https://script.google.com/macros/s/"+codigoImplementacion+"/exec?sdata=datosEstudiantesCurso,"
 /* suspendido por falla de servicio
 const urlApiRutificadorRut =
     "https://rutificador.porsilapongo.cl/api/v1/persona/rut/"//https://rutificador.porsilapongo.cl/api/v1/persona/rut/{rut}
@@ -176,39 +176,46 @@ function datosEstudiante(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhats
 }
 
 function datosEstudianteCurso(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,ctx){//retorna los datos de un curso desde la BBDD con el rut
-  let respuestaDatosEstudianteStandard=`Profesor(a) ${nombreCompletoUsuario}, deme unos segundos para revisar los datos del mensaje a difundir`
+  let respuestaDatosEstudianteCursoStandard=`Profesor(a) ${nombreCompletoUsuario}, deme unos segundos para revisar los datos del mensaje a difundir`
   try {//difiere si el mensaje es desde telegram o whatsapp
-    ctx.reply(respuestaDatosEstudianteStandard);
+    ctx.reply(respuestaDatosEstudianteCursoStandard);
   } catch (errorSolicitudDatosEstudiante) {
-    cliente.sendMessage(numeroUsuarioWhatsapp,respuestaDatosEstudianteStandard);
+    cliente.sendMessage(numeroUsuarioWhatsapp,respuestaDatosEstudianteCursoStandard);
   }
-  cursoAdifundirMensaje = mensajeUsuario.split(' ')[0];
-  mensajeUsuario = mensajeUsuario.split(' ')[1];  
+  cursoAdifundirMensaje = mensajeUsuario.split(' ')[0].trim().toUpperCase();
+  if (cursoAdifundirMensaje.length!==5) {
+    ctx.reply('curso mal escrito, verifique que esta correcto, curso+letra+C25, ejemplo 2FC25')
+    return
+  }
+  //ctx.reply('el curso a difundir es: '+cursoAdifundirMensaje); eliminar esta fila
+  mensajeUsuarioAdifundir = mensajeUsuario.split(' ')[1];  
+  //ctx.reply('la url completa quedo en '+urlApiDatosEstudianteCurso+cursoAdifundirMensaje); eliminar esta linea
   //let RUT_solicitar_datos = mensajeUsuario.replace(/[\.,-]/g, "").replace(/[K-k]/g,'1').trim(); //no se solicita rut
   fetch(urlApiDatosEstudianteCurso+cursoAdifundirMensaje)
     .then((direccionRespuestaApiDatosEstudianteCurso)=>{
         return direccionRespuestaApiDatosEstudianteCurso;
     })
     .then((direccionRespuestaApiDatosEstudianteCurso)=>{
-      fetch(direccionRespuestaApiDatosEstudiante.url)
+      fetch(direccionRespuestaApiDatosEstudianteCurso.url)
         .then((respuestaDireccionApiDatosEstudianteCurso)=>{
           return respuestaDireccionApiDatosEstudianteCurso.text();
         })
         .then((respuestaDireccionApiDatosEstudianteCurso)=>{
           //recibo el string
           if(
-            respuestaDireccionApiDatosEstudianteCurso!=="Curso no existe, reintente"
+            respuestaDireccionApiDatosEstudianteCurso!=="Curso no existe, reintente" || respuestaDireccionApiDatosEstudianteCurso.toString().split(';')[0]!=='sans-serif'
           ){
             try {
-              console.log(respuestaDireccionApiDatosEstudianteCurso);
+              //console.log(respuestaDireccionApiDatosEstudianteCurso); eliminar esta fila que ya da respuesta la api
               var datosPorEstudiantesDelCurso=[];
-              let datosCurso =respuestaDireccionApiDatosEstudianteCurso.split(',').map(e=>e.trim());
+              let datosCurso =respuestaDireccionApiDatosEstudianteCurso.split(',').map(cadaDato=>cadaDato.trim());
               //organizo los renglones de los datos de cada estudiante recibido
-              for (let d = 0; d < datosCurso.length; d += 6){
-              datosPorEstudiantesDelCurso.push(datosCurso.slice(d, d + 6)); //me cuesta entender este codigo porque me interrumpen mucho mis alumnos
-              }///******organizar que hacer con los datos************
-              console.log(datosPorEstudiantesDelCurso);
-              return datosPorEstudiantesDelCurso;
+              for (let d = 0; d < datosCurso.length; d += 7){
+                let renglonDeDatosActual = datosCurso.slice(d, d + 7)
+                console.log('el telefono de '+renglonDeDatosActual[1]+' es '+renglonDeDatosActual[4])
+                ctx.reply('el telefono de '+renglonDeDatosActual[1]+' es '+renglonDeDatosActual[4]+' y se le envio el mensaje: '+mensajeUsuarioAdifundir)
+                datosPorEstudiantesDelCurso.push(renglonDeDatosActual); //agrupo los estudiantes en renglones de 6 en 6 ****error de agrupacion***
+              }
             } catch (error) {
               cliente.sendMessage(numeroAdmin,error);
             }
@@ -223,12 +230,12 @@ function datosEstudianteCurso(nombreCompletoUsuario,mensajeUsuario,numeroUsuario
           } else {
             try {
               ctx.reply(
-                "Curso no existe, verifique los datos y reintente. Si el problema persiste escriba a dcornejo@liceotecnicotalcahuano.cl indicando su rut, nombre y curso"
+                "Curso no existe, verifique los datos y reintente. Si el problema persiste escriba a dcornejo@liceotecnicotalcahuano.cl indicando el problema"
               );
             } catch (error) {
               cliente.sendMessage(
                 numeroUsuarioWhatsapp,
-                "Curso no existe, verifique los datos y reintente. Si el problema persiste escriba a dcornejo@liceotecnicotalcahuano.cl indicando su rut, nombre y curso"
+                "Curso no existe, verifique los datos y reintente. Si el problema persiste escriba a dcornejo@liceotecnicotalcahuano.cl indicando este problema"
               );
             }
           }
