@@ -350,7 +350,7 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
         } catch (errorDatosCurso) {
           cliente.sendMessage(numeroAdmin, errorDatosCurso)
         }
-      }, 15000);
+      }, 25000);
     }
   } else {/**contesta open ai de estar disponible y en caso de emergencia cleverbot*/
     try {

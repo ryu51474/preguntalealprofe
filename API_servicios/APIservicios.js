@@ -225,25 +225,32 @@ function datosEstudianteCurso(nombreCompletoUsuario,mensajeUsuario,numeroUsuario
               //organizo los renglones de los datos de cada estudiante recibido
               for (let d = 0; d < datosCurso.length; d += 7){
                 let renglonDeDatosActual = datosCurso.slice(d, d + 7)
-                let mensajeDifusionFinalWSP = renglonDeDatosActual[1]+' , te recuerdo que tienes agendado: '+mensajeAdifundir;
+                let mensajeDifusionFinalWSP = renglonDeDatosActual[1]+' , te recuerdo algo importante: '+mensajeAdifundir+'\n\nPor favor NO RESPONDAS ESTE MENSAJE';
                 let numeroTelefonoAlumno = renglonDeDatosActual[4].replace('+','')+'@c.us'
-                //console.log('el telefono de '+renglonDeDatosActual[1]+' es '+renglonDeDatosActual[4])
-                //console.log(mensajeDifusionFinalWSP)
                 //ctx.reply(mensajeDifusionFinalWSP)
-                //intento mandar todo a mi whastapp
+                //Ahora mandar todo a mi whastapp
                 cliente.isRegisteredUser(numeroTelefonoAlumno)
                       .then(
                         (esUsuarioWSPregistrado) => { 
                           if (esUsuarioWSPregistrado) {
-                            cliente.sendMessage(numeroAdmin,mensajeDifusionFinalWSP)
+                            cliente.sendMessage(numeroTelefonoAlumno,mensajeDifusionFinalWSP)
                           } else {
-                            cliente.sendMessage(numeroAdmin, 'el numero '+numeroTelefonoAlumno+' del alumno '+renglonDeDatosActual[1]+' '+renglonDeDatosActual[2]+' es invalido para wsp')
+                            try {
+                              ctx.reply('el numero '+numeroTelefonoAlumno+' del alumno '+renglonDeDatosActual[1]+' '+renglonDeDatosActual[2]+' es invalido para wsp o el alumno esta retirado')
+                            } catch (error) {
+                              cliente.sendMessage(numeroAdmin, 'el numero '+numeroTelefonoAlumno+' del alumno '+renglonDeDatosActual[1]+' '+renglonDeDatosActual[2]+' es invalido para wsp o el alumno esta retirado')  
+                            }
                           }
                         }
                       )
                        .catch((errorIsRegistered)=>{
                         //console.log("no se pudo enviar al admin por el error "+errorIsRegistered)
-                        cliente.sendMessage(numeroAdmin,"no se pudo enviar al admin por el error "+errorIsRegistered+' revisa el alumno '+renglonDeDatosActual[1]+' '+renglonDeDatosActual[2])
+                        try {
+                          ctx.reply("no se pudo enviar al admin por el error "+errorIsRegistered+' revisa el alumno '+renglonDeDatosActual[1]+' '+renglonDeDatosActual[2])
+                        } catch (error) {
+                          cliente.sendMessage(numeroAdmin,"no se pudo enviar al admin por el error "+errorIsRegistered+' revisa el alumno '+renglonDeDatosActual[1]+' '+renglonDeDatosActual[2])
+                        }
+                        
                        });
                 //cliente.sendMessage(numeroAdmin,mensajeDifusionFinalWSP)
                 datosPorEstudiantesDelCurso.push(renglonDeDatosActual); //agrupo los estudiantes en renglones de 6 en 6 ****error de agrupacion***
