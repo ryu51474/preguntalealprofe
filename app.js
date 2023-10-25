@@ -12,7 +12,8 @@ const validadorEmail = require('email-validator');
 //const moment = require('moment-timezone');
 
 //modulo propios externos
-const {tokenTlgrm, numeroAdmin} = require('./config');
+const {tokenTlgrm} = require('./config');
+const numeroAdmin = process.env.numeroAdmin;
 const { cambioEmail,envioNotas,datosEstudiante,inscripcionAlSistema,preguntaleAlProfeAI,sapoderado,datosEstudianteCurso } = require('./API_servicios/APIservicios');
 const BOT_TOKEN = tokenTlgrm();//token telegram
 
@@ -202,22 +203,14 @@ bot.on('text', async (ctx)=>{
       ctx.reply(`Profesor(a) ${nombreCompletoUsuarioTelegram}`+complementoMensajeErrorDatosParaDocentesWSP+'(👈🏾 tócalo si quieres recordar las instrucciones)')
     } else {
       //let cursoMensaje = mensajeUsuarioTelegram.split('\/wsp ')[1].trim();
-      let respuestaComandoWSP = datosEstudianteCurso(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram.split('\/wsp ')[1].trim(),null,ctx)
+      datosEstudianteCurso(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram.split('\/wsp ')[1].trim(),null,ctx)
       setTimeout(async() => {
         try {
-          ctx.reply('respuestaFinComandoWSP')
+          ctx.reply('He enviado el mensaje con lo que doy por finalizada su solicitud')
         } catch (errorDatosCurso) {
           ctx.reply(errorDatosCurso)
         }
       }, 15000);
-      /*setTimeout(async ()=>{
-              try {
-                await ctx.reply(respuestaDireccionApiDatosEstudianteCurso);
-              } catch (error) {
-                await cliente.sendMessage(numeroUsuarioWhatsapp,respuestaDireccionApiDatosEstudianteCurso);
-              }
-            },5000)*/ 
-      
     }
   }else {/**contesta open ai de estar disponible y en caso de emergencia cleverbot*/
     try {
@@ -345,13 +338,19 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
       sapoderado(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp,numeroUsuarioWhatsapp,null);
     }
   } */else if(cuerpoMensajeWhatsapp.search(/\/wsp/)>=0){
-    if (cuerpoMensajeWhatsapp.trim()==='/wsp'){
+    if (cuerpoMensajeWhatsapp.trim()==='/wsp') {
       cliente.sendMessage(numeroUsuarioWhatsapp,
-        `Profesor(a) ${nombreUsuarioWhatsapp}`+complementoMensajeErrorDatosParaDocentesWSP+'(👈🏾 vuelve a escribirlo así si quieres recordar las instrucciones)');
-    } else { 
-      cliente.sendMessage(numeroAdmin,'aqui estoy');    
-      let datosPorEstudiantesDelCurso = await datosEstudianteCurso(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp,numeroUsuarioWhatsapp,null);
-      await cliente.sendMessage(numeroAdmin,datosPorEstudiantesDelCurso);
+        `Profesor(a) ${nombreUsuarioWhatsapp}`+complementoMensajeErrorDatosParaDocentesWSP+'(👈🏾 vuelve a escribirlo así si quieres recordar las instrucciones)')
+    } else {
+      //let cursoMensaje = mensajeUsuarioTelegram.split('\/wsp ')[1].trim();
+      datosEstudianteCurso(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp.split('\/wsp ')[1].trim(),numeroUsuarioWhatsapp,null)
+      setTimeout(async() => {
+        try {
+          cliente.sendMessage(numeroAdmin,'He enviado el mensaje con lo que doy por finalizada su solicitud');
+        } catch (errorDatosCurso) {
+          cliente.sendMessage(numeroAdmin, errorDatosCurso)
+        }
+      }, 15000);
     }
   } else {/**contesta open ai de estar disponible y en caso de emergencia cleverbot*/
     try {

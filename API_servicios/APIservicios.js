@@ -2,6 +2,9 @@ require('dotenv').config()
 const axios = require('axios')
 const numeroAdmin = process.env.numeroAdmin;
 const codigoImplementacion = process.env.implementacionApiGoogle
+const cursosPosibles =['1','2'] //por el momento solo los que yo tengo disponible
+const paralelosPosibles = ['A','B','C','D','E','F'] //por el momento solo los que yo tengo disponible
+const codigLiceoPosibles = ['C25'] //por el momento solo los que yo tengo disponible
 
 const urlApiNotas =
     "https://script.google.com/macros/s/"+codigoImplementacion+"/exec?sdata=";
@@ -182,15 +185,25 @@ function datosEstudianteCurso(nombreCompletoUsuario,mensajeUsuario,numeroUsuario
   } catch (errorSolicitudDatosEstudiante) {
     cliente.sendMessage(numeroUsuarioWhatsapp,respuestaDatosEstudianteCursoStandard);
   }
-  cursoAdifundirMensaje = mensajeUsuario.split(' ')[0].trim().toUpperCase();
-  if (cursoAdifundirMensaje.length!==5) {
-    ctx.reply('curso mal escrito, verifique que esta correcto, curso+letra+C25, ejemplo 2FC25')
-    return
-  }
+  let cursoAdifundirMensaje = mensajeUsuario.split(' ')[0].trim().toUpperCase();
+  let numeroCurso   = cursoAdifundirMensaje.split('')[0] || 6;
+  let paraleloCurso = cursoAdifundirMensaje.split('')[1] || 'Z';
+  let codigoLiceo   = cursoAdifundirMensaje.split('')[2].toUpperCase()+cursoAdifundirMensaje.split('')[3].toUpperCase()+cursoAdifundirMensaje.split('')[4].toUpperCase() || 'XXX';
+  let mensajeAdifundir = mensajeUsuario.split('c25')[1] ;  
+  
+  if (
+    cursoAdifundirMensaje.length!==5 || cursosPosibles.indexOf(numeroCurso)<0 || paralelosPosibles.indexOf(paraleloCurso)<0 || codigLiceoPosibles.indexOf(codigoLiceo)<0
+    ) 
+    {
+    let mensajeErrorDeCurso = "curso mal escrito, verifique que esta correcto, curso+letra+C25, ejemplo 2FC25";
+    try {
+      ctx.reply(mensajeErrorDeCurso);
+    } catch (error) {
+      cliente.sendMessage(numeroUsuarioWhatsapp,mensajeErrorDeCurso)
+    }
+    return;
+    }
   //ctx.reply('el curso a difundir es: '+cursoAdifundirMensaje); eliminar esta fila
-  mensajeUsuarioAdifundir = mensajeUsuario.split(' ')[1];  
-  //ctx.reply('la url completa quedo en '+urlApiDatosEstudianteCurso+cursoAdifundirMensaje); eliminar esta linea
-  //let RUT_solicitar_datos = mensajeUsuario.replace(/[\.,-]/g, "").replace(/[K-k]/g,'1').trim(); //no se solicita rut
   fetch(urlApiDatosEstudianteCurso+cursoAdifundirMensaje)
     .then((direccionRespuestaApiDatosEstudianteCurso)=>{
         return direccionRespuestaApiDatosEstudianteCurso;
@@ -203,7 +216,7 @@ function datosEstudianteCurso(nombreCompletoUsuario,mensajeUsuario,numeroUsuario
         .then((respuestaDireccionApiDatosEstudianteCurso)=>{
           //recibo el string
           if(
-            respuestaDireccionApiDatosEstudianteCurso!=="Curso no existe, reintente" || respuestaDireccionApiDatosEstudianteCurso.toString().split(';')[0]!=='sans-serif'
+            respuestaDireccionApiDatosEstudianteCurso!=="Curso no existe, reintente"
           ){
             try {
               //console.log(respuestaDireccionApiDatosEstudianteCurso); eliminar esta fila que ya da respuesta la api
@@ -212,21 +225,34 @@ function datosEstudianteCurso(nombreCompletoUsuario,mensajeUsuario,numeroUsuario
               //organizo los renglones de los datos de cada estudiante recibido
               for (let d = 0; d < datosCurso.length; d += 7){
                 let renglonDeDatosActual = datosCurso.slice(d, d + 7)
-                console.log('el telefono de '+renglonDeDatosActual[1]+' es '+renglonDeDatosActual[4])
-                ctx.reply('el telefono de '+renglonDeDatosActual[1]+' es '+renglonDeDatosActual[4]+' y se le envio el mensaje: '+mensajeUsuarioAdifundir)
+                let mensajeDifusionFinalWSP = renglonDeDatosActual[1]+' , te recuerdo que tienes agendado: '+mensajeAdifundir;
+                let numeroTelefonoAlumno = renglonDeDatosActual[4].replace('+','')+'@c.us'
+                //console.log('el telefono de '+renglonDeDatosActual[1]+' es '+renglonDeDatosActual[4])
+                //console.log(mensajeDifusionFinalWSP)
+                //ctx.reply(mensajeDifusionFinalWSP)
+                //intento mandar todo a mi whastapp
+                cliente.isRegisteredUser(numeroTelefonoAlumno)
+                      .then(
+                        (esUsuarioWSPregistrado) => { 
+                          if (esUsuarioWSPregistrado) {
+                            cliente.sendMessage(numeroAdmin,mensajeDifusionFinalWSP)
+                          } else {
+                            cliente.sendMessage(numeroAdmin, 'el numero '+numeroTelefonoAlumno+' del alumno '+renglonDeDatosActual[1]+' '+renglonDeDatosActual[2]+' es invalido para wsp')
+                          }
+                        }
+                      )
+                       .catch((errorIsRegistered)=>{
+                        //console.log("no se pudo enviar al admin por el error "+errorIsRegistered)
+                        cliente.sendMessage(numeroAdmin,"no se pudo enviar al admin por el error "+errorIsRegistered+' revisa el alumno '+renglonDeDatosActual[1]+' '+renglonDeDatosActual[2])
+                       });
+                //cliente.sendMessage(numeroAdmin,mensajeDifusionFinalWSP)
                 datosPorEstudiantesDelCurso.push(renglonDeDatosActual); //agrupo los estudiantes en renglones de 6 en 6 ****error de agrupacion***
               }
+              //probando mensaje final
+              cliente.sendMessage(numeroAdmin,datosPorEstudiantesDelCurso)
             } catch (error) {
               cliente.sendMessage(numeroAdmin,error);
             }
-            
-            /*setTimeout(async ()=>{
-              try {
-                await ctx.reply(respuestaDireccionApiDatosEstudianteCurso);
-              } catch (error) {
-                await cliente.sendMessage(numeroUsuarioWhatsapp,respuestaDireccionApiDatosEstudianteCurso);
-              }
-            },5000)*/
           } else {
             try {
               ctx.reply(
