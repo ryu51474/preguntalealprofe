@@ -4,7 +4,7 @@ const numeroAdmin = process.env.numeroAdmin;
 const codigoImplementacion = process.env.implementacionApiGoogle
 const cursosPosibles =['1','2','3'] //por el momento solo los que yo tengo disponible
 const paralelosPosibles = ['A','B','C','D','E','F'] //por el momento solo los que yo tengo disponible
-const codigLiceoPosibles = ['C25'] //por el momento solo los que yo tengo disponible
+const codigoLiceoPosibles = ['C25','B26'] //por el momento solo los que yo tengo disponible
 
 const urlApiNotas =
     "https://script.google.com/macros/s/"+codigoImplementacion+"/exec?sdata=";
@@ -192,7 +192,7 @@ function datosEstudianteCurso(nombreCompletoUsuario,mensajeUsuario,numeroUsuario
   let mensajeAdifundir = mensajeUsuario.split('c25')[1] ;  
   
   if (
-    cursoAdifundirMensaje.length!==5 || cursosPosibles.indexOf(numeroCurso)<0 || paralelosPosibles.indexOf(paraleloCurso)<0 || codigLiceoPosibles.indexOf(codigoLiceo)<0
+    cursoAdifundirMensaje.length!==5 || cursosPosibles.indexOf(numeroCurso)<0 || paralelosPosibles.indexOf(paraleloCurso)<0 || codigoLiceoPosibles.indexOf(codigoLiceo)<0
     ) 
     {
     let mensajeErrorDeCurso = "curso mal escrito, verifique que esta correcto, curso+letra+C25, ejemplo 2FC25";
