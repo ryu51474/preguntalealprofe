@@ -382,7 +382,7 @@ bot.on('sticker', (ctx) => ctx.reply('👍'));
 
 //ACTIVACION INICIAL BOTS
 cliente.initialize();
-bot.launch();
+//bot.launch();
 
 // Enable graceful stop
 process.once('SIGINT', () => bot.stop('SIGINT'));
