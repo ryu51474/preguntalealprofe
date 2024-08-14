@@ -22,7 +22,7 @@ const menuOpciones=`Elige o escribe según quieras:\n`+
 '1.- Para **pedir notas** escribe 1\n'+
 '2.- Para **cambiar email** de resultados de las pruebas escribe 2.\n'+
 '3.- Para inscribirse **quiero inscribirme** o escribe 3 (SOLO si no te has inscrito antes)\n'+
-'4.- Si quieres algo distinto a lo anterior, pídemelo directamente (como si fuera google).\n'+
+//'4.- Si quieres algo distinto a lo anterior, pídemelo directamente (como si fuera google).\n'+ (suspendido temporalmente por no contar con token de openai)
 'Escribe **opciones** para volver a ver este mensaje.';
 const finalMenuOpcionesTelegram='\nTambién puedes usar el listado de comandos con el botón MENU\n'+
 '👇 aquí'
@@ -354,10 +354,15 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
     }
   } else {/**contesta open ai de estar disponible y en caso de emergencia cleverbot*/
     try {
-      preguntaleAlProfeAI(cuerpoMensajeWhatsapp)
+      //se suspende temporalmente la ia por problemas de pago
+      /*preguntaleAlProfeAI(cuerpoMensajeWhatsapp)
         .then(async (resultadoRespuestaOpenAI)=>{
           await
-          cliente.sendMessage(numeroUsuarioWhatsapp,resultadoRespuestaOpenAI.replace(/\n\n/g,''));
+          cliente.sendMessage(numeroUsuarioWhatsapp,resultadoRespuestaOpenAI.replace(/\n\n/g,''));*/
+        clever(cuerpoMensajeWhatsapp)
+        .then(async (respuestacleverBot) => {
+          await //console.log("respuesta cleverbot: " + respuestacleverBot);
+          cliente.sendMessage(numeroUsuarioWhatsapp, respuestacleverBot);
         })
     } catch (error) {
       clever(cuerpoMensajeWhatsapp)
