@@ -189,10 +189,12 @@ function datosEstudianteCurso(nombreCompletoUsuario,mensajeUsuario,numeroUsuario
   let numeroCurso   = cursoAdifundirMensaje.split('')[0] || 6;
   let paraleloCurso = cursoAdifundirMensaje.split('')[1] || 'Z';
   let codigoLiceo   = cursoAdifundirMensaje.split('')[2].toUpperCase()+cursoAdifundirMensaje.split('')[3].toUpperCase()+cursoAdifundirMensaje.split('')[4].toUpperCase() || 'XXX';
-  let mensajeAdifundir = mensajeUsuario.split('c25')[1] ;  
+  let mensajeAdifundir = codigoLiceoPosibles
+                          .map(codigoLiceoParaSplit => mensajeUsuario.split(codigoLiceoParaSplit)[1])
+                          .find(mensajeSinLiceo => mensajeSinLiceo !== undefined)// || 'codigo Liceo equivocado favor revisar apiservicios' || mensajeUsuario.split('c25')[1] || mensajeUsuario.split('b26')[1];  
   
   if (
-    cursoAdifundirMensaje.length!==5 || cursosPosibles.indexOf(numeroCurso)<0 || paralelosPosibles.indexOf(paraleloCurso)<0 || codigoLiceoPosibles.indexOf(codigoLiceo)<0
+    cursoAdifundirMensaje.length!==5 || cursosPosibles.indexOf(numeroCurso)<0 || paralelosPosibles.indexOf(paraleloCurso)<0 || codigoLiceoPosibles.indexOf(codigoLiceo)<0 || mensajeAdifundir == undefined
     ) 
     {
     let mensajeErrorDeCurso = "curso mal escrito, verifique que esta correcto, curso+letra+C25, ejemplo 2FC25";
@@ -200,10 +202,11 @@ function datosEstudianteCurso(nombreCompletoUsuario,mensajeUsuario,numeroUsuario
       ctx.reply(mensajeErrorDeCurso);
     } catch (error) {
       cliente.sendMessage(numeroUsuarioWhatsapp,mensajeErrorDeCurso)
+      cliente.sendMessage(numeroAdmin,mensajeErrorDeCurso + ' el mensaje a difundir dio '+ mensajeAdifundir)
     }
     return;
     }
-  //ctx.reply('el curso a difundir es: '+cursoAdifundirMensaje); eliminar esta fila
+  
   fetch(urlApiDatosEstudianteCurso+cursoAdifundirMensaje)
     .then((direccionRespuestaApiDatosEstudianteCurso)=>{
         return direccionRespuestaApiDatosEstudianteCurso;
