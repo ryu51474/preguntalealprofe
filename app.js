@@ -14,7 +14,7 @@ const validadorEmail = require('email-validator');
 //modulo propios externos
 const {tokenTlgrm} = require('./config');
 const numeroAdmin = process.env.numeroAdmin;
-const { cambioEmail,envioNotas,datosEstudiante,inscripcionAlSistema,preguntaleAlProfeAI,sapoderado,datosEstudianteCurso } = require('./API_servicios/APIservicios');
+const { cambioEmail,envioNotas,datosEstudiante,inscripcionAlSistema,preguntaleAlProfeAI,sapoderado,datosEstudianteCurso,simSimi } = require('./API_servicios/APIservicios');
 const BOT_TOKEN = tokenTlgrm();//token telegram
 
 //mensajes constantes de respuesta
@@ -212,14 +212,19 @@ bot.on('text', async (ctx)=>{
         }
       }, 15000);
     }
-  }else {/**contesta open ai de estar disponible y en caso de emergencia cleverbot*/
+  }else {/**contesta simsimi de estar disponible y en caso de emergencia cleverbot*/
     try {
-      preguntaleAlProfeAI(mensajeUsuarioTelegram)
+      simSimi(mensajeUsuarioTelegram)
+       .then(async(resultadoRespuestaSimSimi)=>{
+        await
+        ctx.reply(resultadoRespuestaSimSimi);
+       })
+      /*preguntaleAlProfeAI(mensajeUsuarioTelegram)
         .then(async (resultadoRespuestaOpenAI)=>{
           await
           ctx.reply(resultadoRespuestaOpenAI);
           //console.log(resultadoRespuestaOpenAI);
-        })
+        })*/
     } catch (error) {
       clever(mensajeUsuarioTelegram)
         .then(async (respuestacleverBot) => {
@@ -352,18 +357,24 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
         }
       }, 25000);
     }
-  } else {/**contesta open ai de estar disponible y en caso de emergencia cleverbot*/
+  } else {/**contesta simsimi de estar disponible y en caso de emergencia cleverbot*/
     try {
+      if(cuerpoMensajeWhatsapp==''){cuerpoMensajeWhatsapp='mensaje vacío'}
+      simSimi(cuerpoMensajeWhatsapp)
+       .then(async(resultadoRespuestaSimSimi)=>{
+        await
+        cliente.sendMessage(numeroUsuarioWhatsapp,resultadoRespuestaSimSimi);
+       })
       //se suspende temporalmente la ia por problemas de pago
       /*preguntaleAlProfeAI(cuerpoMensajeWhatsapp)
         .then(async (resultadoRespuestaOpenAI)=>{
           await
           cliente.sendMessage(numeroUsuarioWhatsapp,resultadoRespuestaOpenAI.replace(/\n\n/g,''));*/
-        clever(cuerpoMensajeWhatsapp)
+        /*clever(cuerpoMensajeWhatsapp)
         .then(async (respuestacleverBot) => {
           await //console.log("respuesta cleverbot: " + respuestacleverBot);
           cliente.sendMessage(numeroUsuarioWhatsapp, respuestacleverBot);
-        })
+        })*/
     } catch (error) {
       clever(cuerpoMensajeWhatsapp)
         .then(async (respuestacleverBot) => {

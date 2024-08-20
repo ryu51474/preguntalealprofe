@@ -24,12 +24,12 @@ const urlApiRutificadorNombre =
 //la const de aquí abajo se usa como modelo y no se puede usar como const por variables intermedias
 //const urlApiInscripcionEstudiante = "https://docs.google.com/forms/d/e/1FAIpQLSf3HzUYOd3OZikZMSBE1VOG6rgS0PkUOIIlAuEFyXHeM8V40A/viewform?usp=pp_url&entry.2005620554=Alan&entry.691594478=Brito+Delgado+&entry.450021770=123456785&entry.1128966543=99&entry.1045781291=ryu51474@gmail.com&entry.1414220081=2AC25&entry.1065046570=direcci%C3%B3n+de+sauces+5+mz+246+villa+4&entry.1166974658=%2B56999999999&entry.839337160=Zoila+Vaca&entry.2030694607=%2B56888888888"
 
-// seccion openAI
-const { Configuration, OpenAIApi } = require("openai");
+// seccion openAI cancelada por falta de api key
+/*const { Configuration, OpenAIApi } = require("openai");
 const configuracionAI = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuracionAI);
+const openai = new OpenAIApi(configuracionAI);*/
 
 //seccion telegram
 const fetch = require('isomorphic-fetch');
@@ -355,7 +355,7 @@ function ortografiaMayuscula (texto){//corrige palabras dandole mayuscula a la p
   return texto.replace(/(^\w{1})|(\s+\w{1})/g, primeraLetra => primeraLetra.toUpperCase())
 }
 
-async function preguntaleAlProfeAI(mensajeConsulta) {//Consulta inteligente gracias a openai
+/*async function preguntaleAlProfeAI(mensajeConsulta) {//Consulta inteligente gracias a openai
   const response = await openai.createCompletion({
     model: "text-davinci-003",
     prompt: mensajeConsulta,//ejemplo:"cuantos años tienes",
@@ -368,7 +368,7 @@ async function preguntaleAlProfeAI(mensajeConsulta) {//Consulta inteligente grac
   respuestaInteligente=response.data.choices[0].text;
   //console.log(respuestaInteligente);//despues de pruebas comentar esta linea
   return respuestaInteligente;
-}
+}*/
 /* suspendida por falla de servicio
 function sapoderado(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,ctx) {//consulta datos de apoderados segun servicio api rutificador de porsilapongo.cl (gracias al creador, te pasaste con el nombre de la API jaja)
   let respuestaSapoderadoEstandard= `Profesor(a) ${nombreCompletoUsuario}, deme unos segundos para revisar los nombres que me dio del apoderado: `;
@@ -400,6 +400,40 @@ function sapoderado(nombreCompletoUsuario,mensajeUsuario,numeroUsuarioWhatsapp,c
     })
 }
 */
+//seccion simsimi
+async function simSimi(mensajeEntrante) {
+  const url = 'https://api.simsimi.vn/v1/simtalk'; // URL de la API
+  const key = ''; // Aquí puedes agregar tu clave API si es necesario
+
+  const datos = new URLSearchParams(); // Crear un objeto para los datos
+  datos.append('text', mensajeEntrante); // Agregar el mensaje entrante
+  datos.append('lc', 'es'); // Idioma (vi, en, ph, zh, ch, ru, id, ko, ar, fr, ja, es, de, ...)
+  datos.append('key', key); // Clave API
+  try {
+      const respuesta = await fetch(url, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: datos.toString(), // Convertir los datos a string
+      });
+      /*if (!respuesta.ok) { //eliminado del codigo pues la respuesta no admite esta parte
+          throw new Error('Error en la respuesta de la API');
+      }*/
+      const resultado = await respuesta.json(); // Convertir la respuesta a JSON
+      if(resultado.message == 'Required parameter is not present'){ return 'No molestes con eso por favor, solo respondo a tus palabras escritas. Si insistes serás baneado del sistema'}
+      return resultado.message; // Devolver el resultado
+  } catch (error) {
+      console.error('Error:', error); // Manejo de errores
+      return null; // Devolver null en caso de error
+  }
+}
+
+// Ejemplo de uso simsimi
+/*enviarMensaje('Hola').then(respuesta => {
+  console.log('Respuesta de la API:', respuesta);
+});*/
+
 
 module.exports={
     cambioEmail,
@@ -407,6 +441,7 @@ module.exports={
     datosEstudiante,
     datosEstudianteCurso,
     inscripcionAlSistema,
-    preguntaleAlProfeAI//,
+    simSimi
+    //preguntaleAlProfeAI//,
     //sapoderado //suspendida por falla de servicio
 }

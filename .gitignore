@@ -6,3 +6,4 @@ node_modules
 .DS_Store
 .fleet
 vercel.json
+.vscode
