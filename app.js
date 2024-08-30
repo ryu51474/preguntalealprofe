@@ -71,6 +71,7 @@ const complementoMensajeComandoOnline = ', accede al siguiente link para inscrib
 const mensajeDespedidaConUrlPropia="Chao. Para mas información visita cuando quieras https://www.profedaniel.cl";
 const inicioMensajeErrorCleverBot='Por el momento tengo problemas para responder. Escríbeme mas tarde ';
 const inicioMensajeErrorComandoSapoderado='ESCRIBA despues del comando\n"/sapoderado"\n el (los) nombre(s) y apellido(s) de la persona que va a consultar!\n ej: ***/sapoderado Zoila Vaca Gando*** (sin los asteriscos)\n';
+const respuestaGenericaBot = 'Disculpa, soy solo un servicio de mensajeria virtual, ESTE NO ES EL NUMERO DEL PROFESOR, no puedo responder a tu mensaje, en caso de alguna inquietud puedes acercarte al profesor y expresarla personalmente'
 //INICIOS DE BOTS
 //inicio bot whatsapp
 cliente = new Client({
@@ -358,14 +359,15 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
         }
       }, 25000);
     }
-  } else {/**contesta simsimi de estar disponible y en caso de emergencia cleverbot*/
+  } else {//se elimina simsimi y se deja un mensaje generico po problemas de ai/**contesta simsimi de estar disponible y en caso de emergencia cleverbot*/
     try {
       if(cuerpoMensajeWhatsapp==''){cuerpoMensajeWhatsapp='mensaje vacío'}
-      simSimi(cuerpoMensajeWhatsapp)
-       .then(async(resultadoRespuestaSimSimi)=>{
-        await
-        cliente.sendMessage(numeroUsuarioWhatsapp,resultadoRespuestaSimSimi);
-       })
+      //simSimi(cuerpoMensajeWhatsapp)
+       //.then(async(resultadoRespuestaSimSimi)=>{
+        //await
+        //cliente.sendMessage(numeroUsuarioWhatsapp,resultadoRespuestaSimSimi);
+        cliente.sendMessage(numeroUsuarioWhatsapp,respuestaGenericaBot)
+       //})
       //se suspende temporalmente la ia por problemas de pago
       /*preguntaleAlProfeAI(cuerpoMensajeWhatsapp)
         .then(async (resultadoRespuestaOpenAI)=>{
