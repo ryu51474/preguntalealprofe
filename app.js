@@ -1,5 +1,6 @@
 //seccion Telegram
 const { Telegraf } = require('telegraf');
+const { message } = require('telegraf/filters')
 //seccion whatsapp
 const { Client, LocalAuth,MessageMedia,Buttons, List } = require("whatsapp-web.js");
 const codigoqr = require("qrcode-terminal");
@@ -99,7 +100,7 @@ bot.start((ctx) => ctx.reply('Bienvenido, escribe *opciones* para saber lo que p
 bot.help((ctx) => ctx.reply(ctx.from.first_name+'\n'+menuOpciones+finalMenuOpcionesTelegram));
 
 //procesos de anaisis Telegram
-bot.on('text', async (ctx)=>{
+bot.on(message('text'), async (ctx)=>{
   const nombreUsuarioTelegram = ctx.from.first_name || " ";
   const apellidoUsuarioTelegram = ctx.from.last_name || " ";
   //const usernameUsuario = ctx.from.username;
@@ -393,12 +394,12 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
 
 
 //para otro tipo de mensajes de telegram
-bot.on('sticker', (ctx) => ctx.reply('👍'));
+bot.on(message('sticker'), (ctx) => ctx.reply('👍'));
 //bot.hears(['Hola','hola'], (ctx) => ctx.reply('Hey, que tal '+ ctx.from.first_name+' escribe **opciones** para saber lo que puedo hacer'));
 
 //ACTIVACION INICIAL BOTS
 cliente.initialize();
-//bot.launch();
+bot.launch();
 
 // Enable graceful stop
 process.once('SIGINT', () => bot.stop('SIGINT'));
