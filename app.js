@@ -362,11 +362,19 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
   } else {//se elimina simsimi y se deja un mensaje generico po problemas de ai/**contesta simsimi de estar disponible y en caso de emergencia cleverbot*/
     try {
       if(cuerpoMensajeWhatsapp==''){cuerpoMensajeWhatsapp='mensaje vacío'}
-      //simSimi(cuerpoMensajeWhatsapp)
-       //.then(async(resultadoRespuestaSimSimi)=>{
-        //await
-        //cliente.sendMessage(numeroUsuarioWhatsapp,resultadoRespuestaSimSimi);
+      if(numeroUsuarioWhatsapp.toString()=='56990756008@c.us'||numeroUsuarioWhatsapp.toString()=='56938652069@c.us'||numeroUsuarioWhatsapp.toString()=='56945985033@c.us'||numeroUsuarioWhatsapp.toString()=='56928475081@c.us'){//simsimi para usuarios seleccionados
+        simSimi(cuerpoMensajeWhatsapp)
+        .then(async(resultadoRespuestaSimSimi)=>{
+          await
+         cliente.sendMessage(numeroUsuarioWhatsapp,resultadoRespuestaSimSimi)}
+            )
+      }else if(numeroUsuarioWhatsapp==process.env.numeroAdmin){// si es el admin si utiliza la ai normal
+        cliente.sendMessage(numeroUsuarioWhatsapp,"usted es admin")
+      }
+      else{
         cliente.sendMessage(numeroUsuarioWhatsapp,respuestaGenericaBot)
+      }
+      
        //})
       //se suspende temporalmente la ia por problemas de pago
       /*preguntaleAlProfeAI(cuerpoMensajeWhatsapp)
