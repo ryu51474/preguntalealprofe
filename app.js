@@ -15,7 +15,14 @@ const validarEmail = require('email-validator');
 //modulo propios externos
 const {tokenTlgrm} = require('./config');
 const numeroAdmin = process.env.numeroAdmin;
-const { cambioEmail,envioNotas,datosEstudiante,inscripcionAlSistema,preguntaleAlProfeAI,sapoderado,datosEstudianteCurso,simSimi } = require('./API_servicios/APIservicios');
+const {cambioEmail,
+        envioNotas,
+        datosEstudiante,
+        inscripcionAlSistema,
+        preguntaleAlProfeAI,
+        sapoderado,
+        datosEstudianteCurso,
+        simSimi } = require('./API_servicios/APIservicios');
 const BOT_TOKEN = tokenTlgrm();//token telegram
 
 //mensajes constantes de respuesta
