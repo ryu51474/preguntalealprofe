@@ -2,14 +2,14 @@
 const { Telegraf } = require('telegraf');
 const { message } = require('telegraf/filters')
 //seccion whatsapp
-const { Client, LocalAuth,MessageMedia,Buttons, List } = require("whatsapp-web.js");
-const codigoqr = require("qrcode-terminal");
+const { Client, LocalAuth} = require("whatsapp-web.js");
+const codigoqrPorTerminal = require("qrcode-terminal");
 
 //seccion mixta (telegram y whatsapp)
-const { validate, clean, format, getCheckDigit } = require('rut.js');
+const { validate } = require('rut.js');
 const validaRut = (rut)=>{return validate(rut)};
 const clever = require("cleverbot-free");
-const validadorEmail = require('email-validator');
+const validarEmail = require('email-validator');
 //const moment = require('moment-timezone');
 
 //modulo propios externos
@@ -80,7 +80,7 @@ cliente = new Client({
 });
 cliente.on("qr", (qr) => {
   console.log("no habia sesion iniciada");
-  codigoqr.generate(qr, { small: true });
+  codigoqrPorTerminal.generate(qr, { small: true });
   console.log(`se inicia sesion, por favor escanee el qr de arriba o visite http://localhost:${puerto}/qr`);
   /* appExpress.get('/qr',(req,responseweb)=>{
     let qrEnPagina=qrcodeweb.imageSync(qr.toString(),{type:'svg',size:5})
@@ -197,7 +197,7 @@ bot.on(message('text'), async (ctx)=>{
     //regex del rut deprecado por ser innecesario para este proceso aqui que no lo ocupo
     //let RUT_paraCambioEmail = rutconEmail[0].replace(/[\.,-]/g, '').replace(/[K-k]/g,'1').replace(/\s+/g,'');
     var nuevoEmailalumno = rutconEmail[1].replace(/\s+/g,'')
-    if (validadorEmail.validate(nuevoEmailalumno)){
+    if (validarEmail.validate(nuevoEmailalumno)){
       cambioEmail(nombreCompletoUsuarioTelegram,mensajeUsuarioTelegram,null,ctx);
     } else {ctx.reply(`${nuevoEmailalumno} no es un email valido. Reintente según instrucciones`)}
   } else if(mensajeUsuarioTelegram.search(/\/wsp/)==0){//funcion para difundir un mensaje a un curso determinado
@@ -334,7 +334,7 @@ cliente.on("message", async(mensajeEntrante) => {//procesos de respuestas segun 
     //let RUT_paraCambioEmail = rutconEmail[0].replace(/[\.,-]/g, '').replace(/[K-k]/g,'1').replace(/\s+/g,'');
     var nuevoEmailalumno = rutconEmail[1].replace(" ","")
     //console.log(nuevoEmailalumno);
-    if (validadorEmail.validate(nuevoEmailalumno)){
+    if (validarEmail.validate(nuevoEmailalumno)){
       //console.log(`${nuevoEmailalumno} es un email valido`);
       cambioEmail(nombreUsuarioWhatsapp,cuerpoMensajeWhatsapp,numeroUsuarioWhatsapp,null);
     } else {cliente.sendMessage(numeroUsuarioWhatsapp,`${nuevoEmailalumno} no es un email valido. Reintente según instrucciones`)}
