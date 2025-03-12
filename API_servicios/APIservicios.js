@@ -238,7 +238,7 @@ function datosEstudianteCurso(nombreCompletoUsuario,mensajeUsuario,numeroUsuario
                           if (esUsuarioWSPregistrado) {
                             setTimeout(()=>{
                               cliente.sendMessage(numeroTelefonoAlumno,mensajeDifusionFinalWSP);
-                            },14000)
+                            }, 16000) // Increased to 16 seconds to be safer
                           } else {
                             try {
                               ctx.reply('el numero '+numeroTelefonoAlumno+' del alumno '+renglonDeDatosActual[1]+' '+renglonDeDatosActual[2]+' es invalido para wsp o el alumno esta retirado')
