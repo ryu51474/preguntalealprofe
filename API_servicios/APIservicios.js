@@ -2,7 +2,7 @@ require('dotenv').config()
 const axios = require('axios')
 const numeroAdmin = process.env.numeroAdmin;
 const codigoImplementacion = process.env.implementacionApiGoogle
-const cursosPosibles =['1','2','3'] //por el momento solo los que yo tengo disponible
+const cursosPosibles =['1','2','3','4'] //por el momento solo los que yo tengo disponible
 const paralelosPosibles = ['A','B','C','D','E','F'] //por el momento solo los que yo tengo disponible
 const codigoLiceoPosibles = ['C25','B26'] //por el momento solo los que yo tengo disponible
 
